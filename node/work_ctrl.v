@@ -40,7 +40,8 @@ module work_ctrl #(
     input  [CODE_WIDTH-1:0] spike_code,
     input  [NNW-1:0] neu_num,
     input  [NNW-1:0] x_in,
-    input  [NNW-1:0] y_in
+    input  [NNW-1:0] y_in,
+    input  [SW/3-1:0] z_out
 );
 
 // work FSM
@@ -64,7 +65,6 @@ wire start;
 reg  [NNW-1:0] neu_id;
 reg  [SW/3-1:0] x_s;
 reg  [SW/3-1:0] y_s;
-reg  [SW/3-1:0] z_s;
 wire neu_vld;
 
 // work state
@@ -186,14 +186,12 @@ always @(posedge clk or negedge rst_n) begin
         neu_id <= {NNW{1'b0}};
         x_s <= {(SW/3){1'b0}};
         y_s <= {(SW/3){1'b0}};
-        z_s <= {(SW/3){1'b0}};
     end
     else if (((cs == IDLE) && (ns != IDLE)) ||
              ((cs != IDLE) && (ns == IDLE))) begin
         neu_id <= {NNW{1'b0}};
         x_s <= {(SW/3){1'b0}};
         y_s <= {(SW/3){1'b0}};
-        z_s <= {(SW/3){1'b0}};
     end
     else if ((((cs == INFERENCE) || (cs == I_WAIT)) && (ns == INFERENCE)) ||
              (((cs == CODE_C) || (cs == C_WAIT)) && (ns == CODE_C)) ||
@@ -210,7 +208,6 @@ always @(posedge clk or negedge rst_n) begin
         else begin // (x_s >= x_in) && (y_s >= y_in)
             x_s <= {(SW/3){1'b0}};
             y_s <= {(SW/3){1'b0}};
-            z_s <= z_s + 1'b1;
         end
     end
 end
@@ -229,7 +226,7 @@ always @(posedge clk or negedge rst_n) begin
         config_spk_out_neuid <= {SW{1'b0}};
     end
     else begin
-        config_spk_out_neuid <= {z_s, y_s, x_s};
+        config_spk_out_neuid <= {z_out, y_s, x_s};
     end
 end
 

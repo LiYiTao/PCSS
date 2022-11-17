@@ -68,6 +68,7 @@ module configurator #(
     output [NNW-1:0] y_in,
     output [NNW-1:0] y_out,
     output [NNW-1:0] y_k,
+    output [SW/3-1:0] z_out,
     output [NNW-1:0] pad,
     output [NNW-1:0] stride_log,
     // ctrl signal
@@ -96,7 +97,7 @@ localparam VTH      = 4'h2;
 localparam LEAK     = 4'h3;
 localparam X_IN     = 4'h4;
 localparam Y_IN     = 4'h5;
-localparam Z        = 4'h6;
+localparam Z_OUT    = 4'h6;
 localparam X_K      = 4'h7;
 localparam Y_K      = 4'h8;
 localparam X_OUT    = 4'h9;
@@ -113,11 +114,11 @@ reg  [CDW-1:0] nm_vth;
 reg  [CDW-1:0] nm_leak;
 reg  [CDW-1:0] nm_x_in;
 reg  [CDW-1:0] nm_y_in;
-reg  [CDW-1:0] nm_z;
 reg  [CDW-1:0] nm_x_k;
 reg  [CDW-1:0] nm_y_k;
 reg  [CDW-1:0] nm_x_out;
 reg  [CDW-1:0] nm_y_out;
+reg  [CDW-1:0] nm_z_out;
 reg  [CDW-1:0] nm_pad;
 reg  [CDW-1:0] nm_stride_log;
 reg  [CDW-1:0] nm_xk_yk;
@@ -129,7 +130,7 @@ wire nm_vth_we;
 wire nm_leak_we;
 wire nm_x_in_we;
 wire nm_y_in_we;
-wire nm_z_we;
+wire nm_z_out_we;
 wire nm_x_k_we;
 wire nm_y_k_we;
 wire nm_x_out_we;
@@ -156,6 +157,7 @@ assign x_k = nm_x_k[NNW-1:0];
 assign y_in = nm_y_in[NNW-1:0];
 assign y_out = nm_y_out[NNW-1:0];
 assign y_k = nm_y_k[NNW-1:0];
+assign z_out = nm_z_out[SW/3-1:0];
 assign pad = nm_pad[NNW-1:0];
 assign stride_log = nm_stride_log[NNW-1:0];
 assign config_enable = nm_status[0];
@@ -347,13 +349,13 @@ always @(posedge clk or negedge rst_n) begin
 end
 
 // z reg
-assign nm_z_we = config_reg_we && (config_reg_waddr == Z);
+assign nm_z_out_we = config_reg_we && (config_reg_waddr == Z_OUT);
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-        nm_z <= {CDW{1'b0}};
+        nm_z_out <= {CDW{1'b0}};
     end
-    else if (nm_z_we) begin
-        nm_z <= config_reg_wdata;
+    else if (nm_z_out_we) begin
+        nm_z_out <= config_reg_wdata;
     end
 end
 

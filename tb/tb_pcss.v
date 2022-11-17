@@ -13,7 +13,10 @@ parameter P_HIER          = 7 ;
 parameter CHIPDATA_WIDTH  = 16;
 
 // localparam
-localparam DATA_LEN = 2;
+localparam CFG_LEN = 2;
+localparam SPK_LEN = 4;
+localparam TIK_LEN = 7;
+localparam TIK_CNT = 8; // tik count
 
 // pcss_top Inputs
 reg   clk                                  = 0 ;
@@ -40,29 +43,32 @@ reg   recv_data_par_S                      = 0 ;
 reg   send_data_ready_S                    = 0 ;
 reg   send_data_err_S                      = 0 ;
 
-reg   [14:0] tik_cnt;
-reg   [FW+log2(CONNECT)-1:0] recv_data = 0;
-reg   [FW+log2(CONNECT)-1:0] cfg_data [DATA_LEN-1:0];
+reg   [TIK_LEN+TIK_CNT-1:0] tik_gen;
+reg   [TIK_CNT-1:0] tik_cnt;
+reg   [FW+log2(CONNECT)+TIK_CNT-1:0] recv_data = 0;
+reg   [FW+log2(CONNECT)+TIK_CNT-1:0] cfg_data [CFG_LEN-1:0];
+reg   [FW+log2(CONNECT)+TIK_CNT-1:0] spk_data [SPK_LEN-1:0];
+reg   enable;
 
 // pcss_top Outputs
 wire  recv_data_ready_E                    ;
 wire  recv_data_err_E                      ;
-wire  [CHIPDATA_WIDTH-1:0]  send_data_out_E ;
+wire  [CHIPDATA_WIDTH-1:0]  send_data_out_E;
 wire  send_data_valid_E                    ;
 wire  send_data_par_E                      ;
 wire  recv_data_ready_N                    ;
 wire  recv_data_err_N                      ;
-wire  [CHIPDATA_WIDTH-1:0]  send_data_out_N ;
+wire  [CHIPDATA_WIDTH-1:0]  send_data_out_N;
 wire  send_data_valid_N                    ;
 wire  send_data_par_N                      ;
 wire  recv_data_ready_W                    ;
 wire  recv_data_err_W                      ;
-wire  [CHIPDATA_WIDTH-1:0]  send_data_out_W ;
+wire  [CHIPDATA_WIDTH-1:0]  send_data_out_W;
 wire  send_data_valid_W                    ;
 wire  send_data_par_W                      ;
 wire  recv_data_ready_S                    ;
 wire  recv_data_err_S                      ;
-wire  [CHIPDATA_WIDTH-1:0]  send_data_out_S ;
+wire  [CHIPDATA_WIDTH-1:0]  send_data_out_S;
 wire  send_data_valid_S                    ;
 wire  send_data_par_S                      ;
 
@@ -75,12 +81,11 @@ function integer log2;
     end
 endfunction // log2 
 
-// generate clk
+// generate clk & rst
 initial begin
     forever #(PERIOD/2)  clk=~clk;
 end
 
-// generate reset
 initial begin
     #(PERIOD*2) rst_n  =  1;
 end
@@ -89,36 +94,52 @@ end
 always @(posedge clk or negedge rst_n) begin
     if(~rst_n)begin
         tik <= 1'b0;
-        tik_cnt[14:0] <= 15'b0;
+        tik_gen <= {(TIK_LEN+TIK_CNT){1'b0}};
     end
-    else if(tik_cnt[9] == 1'b1)begin // TODO
-        tik_cnt[14:0] <= 15'b0;
+    else if(tik_gen[TIK_LEN] == 1'b1)begin // TODO
+        tik_gen <= {(TIK_LEN+TIK_CNT){1'b0}};
         tik <= ~tik;
+        tik_cnt <= tik_cnt + 1'b1;
     end
-    else begin
-        tik_cnt[14:0] <= tik_cnt[14:0] + 15'b1;
+    else if(enable)begin
+        tik_gen <= tik_gen + 1'b1;
     end
 end
 
 // open file
 initial begin
-    $readmemh("D:/config",cfg_data);
+    $readmemh("D:/config.txt",cfg_data);
+    $readmemh("D:/spike.txt",spk_data);
 end
 
 // send data
-integer i,j;
+integer i,j,time_step;
 initial begin
+    enable = 0;
     wait (rst_n == 1'b1);
     for (i=0; i<10; i=i+1) begin
         @(posedge clk);
     end
     // config mode
     $display("Config mode");
-    for (j=0; j<DATA_LEN; j=j+1) begin
+    for (j=0; j<CFG_LEN; j=j+1) begin
         pcss_send(cfg_data[j]);
     end
 
     for (i=0; i<200; i=i+1) begin //wait configure ready
+        @(posedge clk);
+    end
+
+    // work mode
+    enable = 1;
+    $display("Work mode");
+    for (j=0; j<SPK_LEN; j=j+1) begin
+        time_step = spk_data[j][FW+log2(CONNECT)+TIK_CNT-1 : FW+log2(CONNECT)];
+        wait (tik_cnt == time_step);
+        pcss_send(spk_data[j]);
+    end
+
+    for (i=0; i<200; i=i+1) begin //wait spk out
         @(posedge clk);
     end
 
@@ -133,6 +154,12 @@ always @(posedge clk) begin
         $display("Receive Data : %h",recv_data);
     end
 end
+
+//  initial begin
+//     $fsdbDumpfile("pcss.fsdb");
+//     $fsdbDumpvars(); // 0,tb_xor_top.x_darwin_top
+//     $fsdbDumpMDA();
+//  end
 
 // PCSS
 pcss_top #(
@@ -288,6 +315,8 @@ task pcss_recv;
 begin
     send_data_ready_E = 1'b0;
     recv_data = 0;
+    // tik
+    recv_data[FW+log2(CONNECT)+TIK_CNT-1 : FW+log2(CONNECT)] = tik_cnt;
     // rec 1
     while (send_data_valid_E == 1'b0) begin
         @(posedge clk);
