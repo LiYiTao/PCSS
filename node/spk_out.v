@@ -255,6 +255,7 @@ assign spk_out_pop = ((cs == S_IDLE) && (ns == S_WAIT)) ||
 assign dst_mem_re  = (cs != S_WAIT) && (ns == S_WAIT);
 assign dst_flag = dst_mem_rdata[0];
 assign config_spk_out_dst_rdata = dst_mem_rdata;
+assign flit_out_wr = (cs == S_SEND);
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin

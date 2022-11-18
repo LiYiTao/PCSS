@@ -68,8 +68,8 @@ reg  [SW/3-1:0] y_s;
 wire neu_vld;
 
 // work state
-reg     [1:0]   cs;
-reg     [1:0]   ns;
+reg     [2:0]   cs;
+reg     [2:0]   ns;
 
 // generate current state
 always @(posedge clk or negedge rst_n) begin
@@ -218,6 +218,8 @@ assign config_soma_vld = neu_vld;
 assign config_sd_vm_addr = neu_id;
 assign config_soma_vm_addr = neu_id;
 assign config_clear_done = (cs == CLEAR) && (ns == IDLE);
+assign config_sd_clear = (cs == CLEAR);
+assign config_soma_clear = (cs == CLEAR);
 assign work_config_busy = cs != IDLE;
 
 // neu_id dly

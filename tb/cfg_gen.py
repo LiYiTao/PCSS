@@ -30,7 +30,7 @@ enable = 0
 clear = 0
 spike_code = 0 # LIF
 reset = 0 # zero
-neu_num = 4
+neu_num = 3 # 4 neurons
 vth = 3
 leak = 0
 x_in = 3
@@ -65,11 +65,20 @@ flit_head = (tik << 64) + (connect << 59) + (pclass << 56) \
 
 # write reg bank
 '''
+nm_neu_num:
+    [11:0] the number of neurons
+addr : 0x1
+'''
+waddr = 1
+ss = "%018x" % (flit_head + (waddr << 21) + neu_num)
+f.write(ss+'\n')
+'''
 nm_status:
     [0] enable bit
     [1] clear bit
     [2:3] spike code : 00 LIF, 10 Poisson
     [4] reset bit : 0 zero, 1 -vth
+addr : 0x0
 '''
 # clear
 enable = 0
@@ -78,19 +87,11 @@ waddr = 0
 tmp = (reset << 4) + (spike_code << 2) + (clear << 1) + enable
 ss = "%018x" % (flit_head + (waddr << 21) + tmp)
 f.write(ss+'\n')
-
-'''
-nm_neu_num:
-    [11:0] the number of neurons
-'''
-waddr += 1
-ss = "%018x" % (flit_head + (waddr << 21) + neu_num)
-f.write(ss+'\n')
 '''
 nm_vth: [19:0]
 nm_leak: [19:0]
 '''
-waddr += 1
+waddr = 2
 ss = "%018x" % (flit_head + (waddr << 21) + vth)
 f.write(ss+'\n')
 
@@ -186,6 +187,7 @@ print('config done')
 filename = "spike.txt"
 f=open(filename,'w')
 
+pclass = 0b000 # spike
 max_time = 5
 for tik in range(1, max_time + 1):
     flit_head = (tik << 64) + (connect << 59) + (pclass << 56) \

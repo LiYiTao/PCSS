@@ -60,6 +60,8 @@ reg  recv_data_valid_2d;
 reg  recv_data_valid_3d;
 reg  recv_data_par_d;
 reg  recv_data_par_2d;
+reg  [CHIPDATA_WIDTH-1:0] recv_data_in_d;
+reg  [CHIPDATA_WIDTH-1:0] recv_data_in_2d;
 wire recv_data_valid_h;
 wire recv_data_valid_l;
 wire recv_data_par_err;
@@ -74,6 +76,8 @@ always @(posedge clk or negedge rst_n) begin
         recv_data_valid_3d <= 1'b0;
         recv_data_par_d <= 1'b0;
         recv_data_par_2d <= 1'b0;
+        recv_data_in_d <= {CHIPDATA_WIDTH{1'b0}};
+        recv_data_in_2d <= {CHIPDATA_WIDTH{1'b0}};
     end
     else begin
         recv_data_valid_d <= recv_data_valid;
@@ -81,12 +85,14 @@ always @(posedge clk or negedge rst_n) begin
         recv_data_valid_3d <= recv_data_valid_2d;
         recv_data_par_d <= recv_data_par;
         recv_data_par_2d <= recv_data_par_d;
+        recv_data_in_d <= recv_data_in;
+        recv_data_in_2d <= recv_data_in_d;
     end
 end
 
 assign recv_data_valid_h = recv_data_valid_2d & recv_data_valid_3d;
 assign recv_data_valid_l = !recv_data_valid_2d & !recv_data_valid_3d;
-assign recv_data_par_err = recv_data_valid_h ? (^recv_data_in != recv_data_par_2d) : 1'b0;
+assign recv_data_par_err = recv_data_valid_h ? (^recv_data_in_2d != recv_data_par_2d) : 1'b0;
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -122,7 +128,7 @@ end
 
 // recv ready
 assign recv_full = !connect_available[recv_index];
-assign recv_index = recv_data_in[CHIPDATA_WIDTH-1:CHIPDATA_WIDTH-log2(CONNECT)]; //TODO
+assign recv_index = recv_data_in_2d[CHIPDATA_WIDTH-1:CHIPDATA_WIDTH-log2(CONNECT)]; //TODO
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -164,16 +170,16 @@ always @(posedge clk or negedge rst_n) begin
         case (recv_cnt)
             // TODO
             3'b000: begin
-                data_in_temp[63:48] <= recv_data_in;
+                data_in_temp[63:48] <= recv_data_in_2d;
             end
             3'b001: begin
-                data_in_temp[47:32] <= recv_data_in;
+                data_in_temp[47:32] <= recv_data_in_2d;
             end
             3'b010: begin
-                data_in_temp[31:16] <= recv_data_in;
+                data_in_temp[31:16] <= recv_data_in_2d;
             end
             3'b011: begin
-                data_in_temp[15:0] <= recv_data_in;
+                data_in_temp[15:0] <= recv_data_in_2d;
             end
         endcase
     end
