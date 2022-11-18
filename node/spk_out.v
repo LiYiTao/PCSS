@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+//---------------------------clk_spk_out----------------------------------------------
 // 
 //
 // Filename         : Spk_out.v
@@ -18,7 +18,7 @@ module spk_out #(
     parameter DST_DEPTH = 4   // dst node depth
 ) (
     // port list
-    input  clk_Spk_out,
+    input  clk_spk_out,
     input  rst_n,
     // node top
     input  credit_in,
@@ -30,7 +30,7 @@ module spk_out #(
     input  config_spk_out_we,
     input  [FW-1:0] config_spk_out_wdata,
     input  [SW-1:0] config_spk_out_neuid,
-    output spk_out_conifg_full,
+    output spk_out_config_full,
     input  config_spk_out_dst_we,
     input  [DST_DEPTH-1:0] config_spk_out_dst_waddr,
     input  [DST_WIDTH-1:0] config_spk_out_dst_wdata,
@@ -53,7 +53,7 @@ u_data_Recv
     .config_spk_out_we       (config_spk_out_we   ),
     .config_spk_out_wdata    (config_spk_out_wdata),
     .config_spk_out_neuid    (config_spk_out_neuid),
-    .spk_out_conifg_full     (spk_out_conifg_full ),
+    .spk_out_config_full     (spk_out_config_full ),
     // soma
     .soma_spk_out_fire       (soma_spk_out_fire),
     // spk_out_fifo
@@ -74,7 +74,7 @@ flit_send
 u_flit_send
 (
     // port list
-    .clk                    (clk_Spk_out),
+    .clk                    (clk_spk_out),
     .rst_n                  (rst_n),
     // ni
     .credit_in              (credit_in     ),
@@ -123,7 +123,7 @@ module data_Recv #(
     input  config_spk_out_we,
     input  [FW-1:0] config_spk_out_wdata,
     input  [SW-1:0] config_spk_out_neuid,
-    output spk_out_conifg_full,
+    output spk_out_config_full,
     // soma
     input  soma_spk_out_fire,
     // spk_out_fifo

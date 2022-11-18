@@ -41,7 +41,7 @@ wire                  spk_in_axon_vld;
 wire [SW-1:0]         spk_in_axon_data;
 wire [FTW-1:0]        spk_in_axon_type;
 
-wire                  spk_out_conifg_full;
+wire                  spk_out_config_full;
 
 wire                  axon_busy;
 wire [NNW-1:0]        axon_sd_vm_addr;
@@ -156,7 +156,7 @@ the_spk_out
     .config_spk_out_we(config_spk_out_we),
     .config_spk_out_wdata(config_spk_out_wdata),
     .config_spk_out_neuid(config_spk_out_neuid),
-    .spk_out_config_full(spk_out_conifg_full),
+    .spk_out_config_full(spk_out_config_full),
     .config_spk_out_dst_we(config_spk_out_dst_we),
     .config_spk_out_dst_waddr(config_spk_out_dst_waddr),
     .config_spk_out_dst_wdata(config_spk_out_dst_wdata),
@@ -344,7 +344,7 @@ the_config_top
     .config_soma_random_seed(config_soma_random_seed),
     .config_soma_enable(config_soma_enable),
     // spk_out
-    .spk_out_conifg_full(spk_out_conifg_full),
+    .spk_out_config_full(spk_out_config_full),
     .config_spk_out_neuid(config_spk_out_neuid),
     .config_spk_out_we(config_spk_out_we),
     .config_spk_out_wdata(config_spk_out_wdata),

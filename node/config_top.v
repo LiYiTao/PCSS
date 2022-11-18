@@ -59,7 +59,7 @@ module config_top #(
     output [VW-1:0] config_soma_random_seed,
     output config_soma_enable,
     // spk_out
-    input  spk_out_conifg_full,
+    input  spk_out_config_full,
     output [SW-1:0] config_spk_out_neuid,
     output config_spk_out_we,
     output [CDW-1:0] config_spk_out_wdata,
@@ -134,7 +134,7 @@ the_config_ctrl
     // spk_out
     .config_spk_out_we(config_spk_out_we),
     .config_spk_out_wdata(config_spk_out_wdata),
-    .spk_out_conifg_full(spk_out_conifg_full),
+    .spk_out_config_full(spk_out_config_full),
     // work_ctrl
     .work_config_busy(work_config_busy),
     // configurator
@@ -169,7 +169,7 @@ the_work_ctrl
     .config_soma_vm_addr(config_soma_vm_addr),
     .config_soma_clear(config_soma_clear),
     // Spk_out
-    .spk_out_conifg_full(spk_out_conifg_full),
+    .spk_out_config_full(spk_out_config_full),
     .config_spk_out_neuid(config_spk_out_neuid),
     // config ctrl
     .work_config_busy(work_config_busy),

@@ -29,7 +29,7 @@ module config_ctrl #(
     // spk_out
     output config_spk_out_we,
     output reg [FW-1:0] config_spk_out_wdata,
-    input  spk_out_conifg_full,
+    input  spk_out_config_full,
     // work_ctrl
     input  work_config_busy,
     //configurator
@@ -135,7 +135,7 @@ always @(*) begin
             ns = R_SEND;
         end
         R_SEND : begin
-            if ((!spk_out_conifg_full) && (!work_config_busy)) begin
+            if ((!spk_out_config_full) && (!work_config_busy)) begin
                 ns = IDLE;
             end
             else begin

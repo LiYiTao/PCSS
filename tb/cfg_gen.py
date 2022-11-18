@@ -187,7 +187,7 @@ filename = "spike.txt"
 f=open(filename,'w')
 
 max_time = 5
-for tik in range(max_time + 1):
+for tik in range(1, max_time + 1):
     flit_head = (tik << 64) + (connect << 59) + (pclass << 56) \
           + (dst_y << 52) + (dst_x << 48) + (r_2 << 42) + (r_1 << 36)
     flit_data = (s_z << 16) + (s_y << 8) + s_x

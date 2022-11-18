@@ -130,11 +130,16 @@ always @(posedge clk or negedge rst_n) begin
     else config_enable_dly <= config_soma_enable;
 end
 
-wire [9:0] n;
-wire [9:0] k;
+localparam FMW = 12; // TODO need add
+localparam CNTW = 8;
+
+wire [FMW-1:0] n;
+wire [CNTW-1:0] k;
+wire [VW-1:0] VM_P;
 
 Poisson_code #(
-
+    .FMW(FMW),
+    .CNTW(CNTW)
 ) u_poisson(
     .n         (n    ),
     .k         (k    ),
@@ -144,7 +149,7 @@ Poisson_code #(
 reg         [VW-1:0] VM_temp;
 wire signed [VW:0  ] V_reset;
 
-assign {n,k} = config_soma_vm_rdata + sd_soma_vm;
+assign {n,k} = config_soma_vm_rdata;
 //MUX1 VM Select
 always @*
     case(config_soma_code)

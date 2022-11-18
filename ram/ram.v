@@ -118,9 +118,9 @@ the_queue
     .wr_en(wr_en),
     .rd_en(rd_en),
     .wr_addr(wr_ptr),
-    .wr_data(in),
+    .wr_data(din),
     .rd_addr(rd_ptr),
-    .rd_data(out)
+    .rd_data(dout)
 );
 
 assign almost_full = depth >= {ADDR_WIDTH{1'b1}} - 1'b1;

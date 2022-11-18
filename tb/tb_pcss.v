@@ -8,6 +8,7 @@ parameter PERIOD          = 10;
 parameter FW              = 59;
 parameter B               = 4 ;
 parameter CONNECT         = 2 ;
+parameter CONNECT_WIDTH   = 5 ;
 parameter P_MESH          = 5 ;
 parameter P_HIER          = 7 ;
 parameter CHIPDATA_WIDTH  = 16;
@@ -45,9 +46,9 @@ reg   send_data_err_S                      = 0 ;
 
 reg   [TIK_LEN+TIK_CNT-1:0] tik_gen;
 reg   [TIK_CNT-1:0] tik_cnt;
-reg   [FW+log2(CONNECT)+TIK_CNT-1:0] recv_data = 0;
-reg   [FW+log2(CONNECT)+TIK_CNT-1:0] cfg_data [CFG_LEN-1:0];
-reg   [FW+log2(CONNECT)+TIK_CNT-1:0] spk_data [SPK_LEN-1:0];
+reg   [FW+CONNECT_WIDTH+TIK_CNT-1:0] recv_data = 0;
+reg   [FW+CONNECT_WIDTH+TIK_CNT-1:0] cfg_data [CFG_LEN-1:0];
+reg   [FW+CONNECT_WIDTH+TIK_CNT-1:0] spk_data [SPK_LEN-1:0];
 reg   enable;
 
 // pcss_top Outputs
@@ -94,12 +95,15 @@ end
 always @(posedge clk or negedge rst_n) begin
     if(~rst_n)begin
         tik <= 1'b0;
+        tik_cnt <= {TIK_CNT{1'b0}};
         tik_gen <= {(TIK_LEN+TIK_CNT){1'b0}};
     end
     else if(tik_gen[TIK_LEN] == 1'b1)begin // TODO
         tik_gen <= {(TIK_LEN+TIK_CNT){1'b0}};
         tik <= ~tik;
-        tik_cnt <= tik_cnt + 1'b1;
+        if (tik) begin
+            tik_cnt <= tik_cnt + 1'b1;
+        end
     end
     else if(enable)begin
         tik_gen <= tik_gen + 1'b1;
@@ -126,7 +130,7 @@ initial begin
         pcss_send(cfg_data[j]);
     end
 
-    for (i=0; i<200; i=i+1) begin //wait configure ready
+    for (i=0; i<100; i=i+1) begin //wait configure ready
         @(posedge clk);
     end
 
@@ -134,12 +138,12 @@ initial begin
     enable = 1;
     $display("Work mode");
     for (j=0; j<SPK_LEN; j=j+1) begin
-        time_step = spk_data[j][FW+log2(CONNECT)+TIK_CNT-1 : FW+log2(CONNECT)];
+        time_step = spk_data[j][FW+CONNECT_WIDTH+TIK_CNT-1 : FW+CONNECT_WIDTH];
         wait (tik_cnt == time_step);
         pcss_send(spk_data[j]);
     end
 
-    for (i=0; i<200; i=i+1) begin //wait spk out
+    for (i=0; i<100; i=i+1) begin //wait spk out
         @(posedge clk);
     end
 
@@ -219,7 +223,7 @@ pcss_top #(
 
 // task
 task pcss_send(
-    input [FW+log2(CONNECT)-1:0] Data
+    input [FW+CONNECT_WIDTH-1:0] Data
 );
 begin
     recv_data_in_E = {CHIPDATA_WIDTH{1'b0}};
@@ -235,7 +239,7 @@ begin
         @(posedge clk);
     end
     #1;
-    recv_data_in_E    = Data[FW+log2(CONNECT)-1:48];
+    recv_data_in_E    = Data[FW+CONNECT_WIDTH-1:48];
     recv_data_valid_E = 1'b1;
     recv_data_par_E   = ^recv_data_in_E;
     while(recv_data_ready_E == 1'b0)begin
@@ -316,7 +320,7 @@ begin
     send_data_ready_E = 1'b0;
     recv_data = 0;
     // tik
-    recv_data[FW+log2(CONNECT)+TIK_CNT-1 : FW+log2(CONNECT)] = tik_cnt;
+    recv_data[FW+CONNECT_WIDTH+TIK_CNT-1 : FW+CONNECT_WIDTH] = tik_cnt;
     // rec 1
     while (send_data_valid_E == 1'b0) begin
         @(posedge clk);
@@ -324,7 +328,7 @@ begin
     #1;
     send_data_ready_E = 1'b1;
     send_data_err_E = 1'b0;
-    recv_data[FW+log2(CONNECT)-1:48] = send_data_out_E;
+    recv_data[FW+CONNECT_WIDTH-1:48] = send_data_out_E;
     while (send_data_valid_E == 1'b1) begin
         @(posedge clk);
     end

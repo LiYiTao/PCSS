@@ -45,6 +45,7 @@ flit_Recv
     .FW                         ( FW          ), 
     .FTW                        ( FTW         )
 )
+the_flit_recv
 (
     // port list
     .clk                        ( clk_spk_in            ),          
@@ -86,10 +87,10 @@ flit_Anls
     .FTW                         ( FTW ),
     .SW                          ( SW )
 )
-u_flit_Anls
+the_flit_Anls
 (
     // port list
-    .clk_flit_Anls               ( clk_spk_in            ),
+    .clk                         ( clk_spk_in            ),
     .rst_n                       ( rst_n                 ),
     // Axon
     .axon_busy                   ( axon_busy             ),
