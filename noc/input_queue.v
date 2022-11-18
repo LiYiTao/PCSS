@@ -101,7 +101,7 @@ the_flit_buffer
 
 // dest_fifo
 flit_buffer #(
-    .DATA_WIDTH(FW),
+    .DATA_WIDTH(P),
     .ADDR_WIDTH(B)
 )
 dest_fifo

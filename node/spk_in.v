@@ -37,6 +37,7 @@ module spk_in
 wire spk_in_push;
 wire [FW-1:0] spk_in_push_data;
 wire spk_in_pop;
+wire [FW-1:0] spk_in_pop_data;
 wire spk_in_fifo_empty;
 
 flit_Recv
@@ -123,7 +124,7 @@ module flit_Recv #(
     output credit_out ,
     // spk_in_fifo
     output spk_in_push,
-    output spk_in_push_data,
+    output [FW-1:0] spk_in_push_data,
     input  spk_in_pop
 );
 

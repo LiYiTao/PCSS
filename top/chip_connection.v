@@ -7,12 +7,12 @@ module chip_connection #(
     input  clk,
     input  rst_n,
     // noc
-    input  [CONNECT-1:0] flit_in_wr_noc,
-    input  [FW*CONNECT-1:0] flit_in_noc,
-    output [CONNECT-1:0] flit_out_wr_noc,
-    output [FW*CONNECT-1:0] flit_out_noc,
-    input  [CONNECT-1:0] credit_in_noc,
-    output [CONNECT-1:0] credit_out_noc,
+    output [CONNECT-1:0] flit_in_wr_noc,
+    output [FW*CONNECT-1:0] flit_in_noc,
+    input  [CONNECT-1:0] flit_out_wr_noc,
+    input  [FW*CONNECT-1:0] flit_out_noc,
+    output [CONNECT-1:0] credit_in_noc,
+    input  [CONNECT-1:0] credit_out_noc,
     // chip
     input  data_in_wr,
     input  [FW+log2(CONNECT)-1:0] data_in,

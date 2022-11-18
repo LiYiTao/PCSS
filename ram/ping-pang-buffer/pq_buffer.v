@@ -83,7 +83,11 @@ wire [DATA_WIDTH-1:0] din_b2 ;
 wire [DATA_WIDTH-1:0] dout_b1;
 wire [DATA_WIDTH-1:0] dout_b2;
 
-din_mux dinmux(
+din_mux #(
+    .DATA_WIDTH(DATA_WIDTH)
+)
+dinmux
+(
     .din       (din                ),
     .sl_din    (bunit_sl           ),
     .dout1     (din_b1             ),
@@ -114,7 +118,11 @@ sp_ram #(
     .dout      (dout_b2            )
 );
 
-dout_mux doutmux(
+dout_mux #(
+    .DATA_WIDTH(DATA_WIDTH)
+)
+doutmux
+(
     .din1      (dout_b1            ),
     .din2      (dout_b2            ),
     .sl_dout   (bunit_sl_lat2      ),

@@ -62,7 +62,7 @@ module config_top #(
     input  spk_out_config_full,
     output [SW-1:0] config_spk_out_neuid,
     output config_spk_out_we,
-    output [CDW-1:0] config_spk_out_wdata,
+    output [FW-1:0] config_spk_out_wdata,
     // write & read sd
     output config_sd_vm_we,
     output [NNW-1:0] config_sd_vm_waddr,

@@ -68,7 +68,7 @@ wire [P_HIER-1:0] hier1_flit_out_wr_all [NXYR2-1:0];
 wire [FW*P_HIER-1:0] hier1_flit_out_all [NXYR2-1:0];
 wire [P_HIER-1:0] hier1_credit_in_all [NXYR2-1:0];
 wire [P_HIER-1:0] hier1_credit_out_all [NXYR2-1:0];
-wire [P_HIER-1:0] current_r1 [P_HIER-1:0];
+wire [P_HIER-2:0] current_r1 [P_HIER-2:0]; // exclude P0
 
 // node connect:
 wire node_flit_in_wr_all [NXYR2R1-1:0];
@@ -191,7 +191,7 @@ generate
                 .credit_out_all(hier2_credit_out_all[`ROUTER2_NUM(x,y)]),
                 // current node
                 .current_r2(1'b1), // current is r2
-                .current_r1({(P_MESH-1){1'b0}})
+                .current_r1({(P_HIER-1){1'b0}})
             );
 
             // hier2 connect

@@ -60,7 +60,7 @@ input                         rst_n                       ;
 input                         tik                         ;
 //Axon
 input     [NNW -1:0   ]       axon_sd_vm_addr             ;
-input     [NNW -1:0   ]       axon_sd_wgt_addr            ;
+input     [WD -1:0   ]        axon_sd_wgt_addr            ;
 input     [LAN_num-1:0]       axon_sd_lans                ;
 input                         axon_sd_vld                 ;
 //Soma
@@ -85,11 +85,11 @@ output    [WW-1:0     ]       config_sd_wgt_rdata         ;
 
 
 
-reg [NNW -1:0   ] wgt_raddr;
+reg [WD-1:0] wgt_raddr;
 
 dp_ram #(
-    .RAM_WIDTH   (WD                  ),
-    .ADDR_WIDTH  (WW                  )
+    .RAM_WIDTH   (WW                  ),
+    .ADDR_WIDTH  (WD                  )
 ) weight_mem (
     .rst_n       (rst_n               ),
     .write_clk   (clk_SD              ),
@@ -107,8 +107,8 @@ reg [NNW -1:0   ] vm_waddr;
 reg [VW-1:0     ] vm_wdata;
 
 pq_buffer #(
-    .DATA_WIDTH  (NNW                 ),
-    .ADDR_WIDTH  (VW                  )
+    .DATA_WIDTH  (VW                 ),
+    .ADDR_WIDTH  (NNW                )
 ) vm_buffer (
     .clk         (clk_SD),
     .rst_n       (rst_n),

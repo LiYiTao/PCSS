@@ -19,7 +19,7 @@ module router #(
     output [P-1:0] credit_out_all,
     // current node
     input  current_r2, // current is r2
-    input  [P-1:0] current_r1
+    input  [P-2:0] current_r1
 );
 
 wire [FW*P-1:0] flit_to_crossbar_all;

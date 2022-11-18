@@ -113,6 +113,7 @@ always @(posedge clk or negedge rst_n)
     else if(config_soma_vm_re)
         config_soma_vm_we_r <= config_soma_vm_we;
 
+wire [VW-1:0] V_rand;
 lfsr #(
     .NUM_BITS   (VW) // TODO
 ) rand(

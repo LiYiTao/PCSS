@@ -42,6 +42,8 @@ module spk_out #(
 wire spk_out_push;
 wire [FW-1:0] spk_out_push_data;
 wire spk_out_fifo_full;
+wire spk_out_pop;
+wire [FW-1:0] spk_out_pop_data;
 
 data_Recv #(
     .FW                     (FW),
