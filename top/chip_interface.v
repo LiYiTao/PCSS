@@ -1,6 +1,7 @@
 module chip_interface #(
     parameter FW = 64, // TODO
     parameter CONNECT = 2,
+    parameter CONNECT_WIDTH = 5,
     parameter CHIPDATA_WIDTH = 16
 ) (
     // system signal
@@ -170,7 +171,7 @@ always @(posedge clk or negedge rst_n) begin
         case (recv_cnt)
             // TODO
             3'b000: begin
-                data_in_temp[63:48] <= recv_data_in_2d;
+                data_in_temp[FW+log2(CONNECT)-1:48] <= recv_data_in_2d[CHIPDATA_WIDTH-CONNECT_WIDTH+log2(CONNECT)-1:0];
             end
             3'b001: begin
                 data_in_temp[47:32] <= recv_data_in_2d;
@@ -274,7 +275,7 @@ end
 always @(*) begin
     case (send_cnt)
         3'b000:
-            send_data_out = send_rd_data[63:48];
+            send_data_out = {{(CONNECT_WIDTH-log2(CONNECT)){1'b0}},send_rd_data[FW+log2(CONNECT)-1:48]};
         3'b001:
             send_data_out = send_rd_data[47:32];
         3'b010:
