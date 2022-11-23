@@ -154,6 +154,7 @@ assign config_spk_in_credit = ((ns == IDLE) &&
                               ((cs == W_WAIT) || (cs == R_SEND)));
 
 assign config_re            = (cs == R_READ);
+assign config_spk_out_we    = ((cs == R_SEND) && (ns != R_SEND));
 
 always @(posedge clk or negedge rst_n) begin
     if (rst_n == 1'b0) begin

@@ -1,7 +1,7 @@
 import numpy as np
 
 tik = 0
-connect = 0
+connect = 1
 pclass = 0b110 # write
 dst_x = 0b1000 # -1
 dst_y = 0
@@ -42,9 +42,10 @@ x_k = 3
 y_k = 3
 pad = 1
 stride_log = 1
+rand_seed = 0
 
 # wgt mem
-n = np.arange(0,9)
+n = np.arange(1,10)
 n = n.reshape(3,3)
 wgt_mem = np.expand_dims(n,2).repeat(3,axis=2)
 
@@ -53,7 +54,7 @@ dst_mem_x = 1
 dst_mem_y = 1
 dst_mem_r2 = 0
 dst_mem_r1 = 0
-flg = 1
+flg = 1 # continue
 dst_mem = np.zeros(2)
 dst_mem[0] = (dst_mem_y << 16) + (dst_mem_x << 12) + (dst_mem_r2 << 6) + dst_mem_r1
 
@@ -99,13 +100,13 @@ waddr += 1
 ss = "%018x" % (flit_head + (waddr << 21) + leak)
 f.write(ss+'\n')
 '''
-x_in : [7:0]
-y_in : [7:0]
-x_out : [7:0]
-y_out : [7:0]
-z_out : [7:0]
-x_k : [2:0]
-y_k : [2:0]
+x_in : [7:0] 0x4
+y_in : [7:0] 0x5
+z_out : [7:0] 0x6
+x_k : [2:0] 0x7
+y_k : [2:0] 0x8
+x_out : [7:0] 0x9
+y_out : [7:0] 0xa
 '''
 waddr += 1
 ss = "%018x" % (flit_head + (waddr << 21) + x_in)
@@ -114,14 +115,6 @@ f.write(ss+'\n')
 waddr += 1
 tmp = vth
 ss = "%018x" % (flit_head + (waddr << 21) + y_in)
-f.write(ss+'\n')
-
-waddr += 1
-ss = "%018x" % (flit_head + (waddr << 21) + x_out)
-f.write(ss+'\n')
-
-waddr += 1
-ss = "%018x" % (flit_head + (waddr << 21) + y_out)
 f.write(ss+'\n')
 
 waddr += 1
@@ -135,6 +128,15 @@ f.write(ss+'\n')
 waddr += 1
 ss = "%018x" % (flit_head + (waddr << 21) + y_k)
 f.write(ss+'\n')
+
+waddr += 1
+ss = "%018x" % (flit_head + (waddr << 21) + x_out)
+f.write(ss+'\n')
+
+waddr += 1
+ss = "%018x" % (flit_head + (waddr << 21) + y_out)
+f.write(ss+'\n')
+
 '''
 pad : valid
 '''
@@ -147,6 +149,20 @@ stride : 1,2,4,8,16
 '''
 waddr += 1
 ss = "%018x" % (flit_head + (waddr << 21) + stride_log)
+f.write(ss+'\n')
+'''
+xk_yk
+addr : 0xd
+'''
+waddr += 1
+ss = "%018x" % (flit_head + (waddr << 21) + x_k*y_k)
+f.write(ss+'\n')
+'''
+rand_seed
+addr : 0xe
+'''
+waddr += 1
+ss = "%018x" % (flit_head + (waddr << 21) + rand_seed)
 f.write(ss+'\n')
 
 # write wgt mem
@@ -165,7 +181,7 @@ for x in wgt_mem:
 '''
 0x2000 ~ 0x2FFF
 '''
-waddr = 0x1000
+waddr = 0x2000
 for dst in dst_mem:
     ss = "%018x" % (flit_head + (waddr << 21) + int(dst))
     f.write(ss+'\n')
@@ -188,13 +204,15 @@ filename = "spike.txt"
 f=open(filename,'w')
 
 pclass = 0b000 # spike
-max_time = 5
+max_time = 8
 for tik in range(1, max_time + 1):
     flit_head = (tik << 64) + (connect << 59) + (pclass << 56) \
           + (dst_y << 52) + (dst_x << 48) + (r_2 << 42) + (r_1 << 36)
     flit_data = (s_z << 16) + (s_y << 8) + s_x
     ss = "%018x" % (flit_head + flit_data)
     f.write(ss+'\n')
+    if s_x < 3: s_x += 1
+    else: s_x = 0
 
 f.close()
 print('spike done')

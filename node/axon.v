@@ -51,9 +51,7 @@ reg  [NNW-1:0] xw_start;
 reg  [NNW-1:0] xw_start_hold;
 reg  [NNW-1:0] yw_start;
 reg  [NNW-1:0] x_pre;
-reg  [NNW-1:0] x_post;
 reg  [NNW-1:0] y_pre;
-reg  [NNW-1:0] y_post;
 wire [NNW-1:0] stride;
 reg  [NNW-1:0] x_pre_stride;
 reg  [NNW-1:0] y_pre_stride;
@@ -209,12 +207,11 @@ always @( *) begin
     x_pre_stride = (x_pre << (NNW-stride_log)) >> (NNW-stride_log); // mod
     xw_start = x_k - 1'b1 - x_pre_stride;
     // x end
-    x_post = xs + pad + x_k + 1'b1;
-    if (xs + x_k + 1'b1 <= x_in + pad) begin // x_post <= x_in + 2*pad
-        xl_end = x_post >> stride_log;
+    if (xs + x_k <= x_in + pad) begin // x_post <= x_in + 2*pad - 1
+        xl_end = (xs + pad) >> stride_log;
     end
     else begin
-        xl_end = (x_in + pad + pad) >> stride_log;
+        xl_end = (x_in + pad + pad - x_k) >> stride_log;
     end
 end
 
@@ -231,12 +228,11 @@ always @( *) begin
     y_pre_stride = (y_pre << (NNW-stride_log)) >> (NNW-stride_log); // mod
     yw_start = y_k - 1'b1 - y_pre_stride;
     // y end
-    y_post = ys + pad + y_k + 1'b1;
-    if (ys + y_k + 1'b1 <= y_in + pad) begin // y_post <= y_in + 2*pad
-        yl_end = y_post >> stride_log;
+    if (ys + y_k <= y_in + pad) begin // y_post <= y_in + 2*pad - 1
+        yl_end = (ys + pad) >> stride_log;
     end
     else begin
-        yl_end = (y_in + pad + pad) >> stride_log;
+        yl_end = (y_in + pad + pad - y_k) >> stride_log;
     end
 end
     

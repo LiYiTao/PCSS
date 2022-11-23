@@ -48,6 +48,7 @@ module config_top #(
     output [NNW-1:0] config_sd_vm_addr,
     output config_sd_vld,
     output config_sd_clear,
+    output config_sd_start,
     // soma
     output config_soma_vld,
     output config_soma_clear,
@@ -164,6 +165,7 @@ the_work_ctrl
     .config_sd_vld(config_sd_vld),
     .config_sd_vm_addr(config_sd_vm_addr),
     .config_sd_clear(config_sd_clear),
+    .config_sd_start(config_sd_start),
     // Soma
     .config_soma_vld(config_soma_vld),
     .config_soma_vm_addr(config_soma_vm_addr),

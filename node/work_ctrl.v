@@ -24,6 +24,7 @@ module work_ctrl #(
     output config_sd_vld,
     output [NNW-1:0] config_sd_vm_addr,
     output config_sd_clear,
+    output config_sd_start,
     // Soma
     output config_soma_vld,
     output [NNW-1:0] config_soma_vm_addr,
@@ -219,6 +220,7 @@ assign config_sd_vm_addr = neu_id;
 assign config_soma_vm_addr = neu_id;
 assign config_clear_done = (cs == CLEAR) && (ns == IDLE);
 assign config_sd_clear = (cs == CLEAR);
+assign config_sd_start = start;
 assign config_soma_clear = (cs == CLEAR);
 assign work_config_busy = cs != IDLE;
 

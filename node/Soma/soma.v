@@ -47,7 +47,11 @@ module soma
     config_soma_vm_raddr ,
     config_soma_vm_rdata ,
     config_soma_random_seed,
-    config_soma_enable
+    config_soma_enable   ,
+    // axon
+    axon_soma_we         ,
+    axon_soma_waddr      ,
+    axon_soma_wdata
 );
 
 input                       clk_soma             ;
@@ -57,25 +61,36 @@ input [VW-1:0]              sd_soma_vm           ;
 //Spk_out
 output reg                  soma_spk_out_fire    ;
 //Config
-input [CODE_WIDTH-1:0 ]     config_soma_code     ;   
+input  [CODE_WIDTH-1:0 ]    config_soma_code     ;   
 input                       config_soma_reset    ;
-input [VW-1:0]              config_soma_vth      ;
-input [VW-1:0]              config_soma_leak     ;
+input  [VW-1:0]             config_soma_vth      ;
+input  [VW-1:0]             config_soma_leak     ;
 input                       config_soma_vld      ;
-input [NNW-1:0]             config_soma_vm_addr  ;
+input  [NNW-1:0]            config_soma_vm_addr  ;
 input                       config_soma_clear    ;
 input                       config_soma_vm_we    ; 
-input [NNW-1:0]             config_soma_vm_waddr ;
-input [VW-1:0]              config_soma_vm_wdata ;
+input  [NNW-1:0]            config_soma_vm_waddr ;
+input  [VW-1:0]             config_soma_vm_wdata ;
 input                       config_soma_vm_re    ; 
-input [NNW-1:0]             config_soma_vm_raddr ;
-input [VW-1:0]              config_soma_vm_rdata ;
-input [VW-1:0]              config_soma_random_seed;
-input                       config_soma_enable;
+input  [NNW-1:0]            config_soma_vm_raddr ;
+output [VW-1:0]             config_soma_vm_rdata ;
+input  [VW-1:0]             config_soma_random_seed;
+input                       config_soma_enable   ;
+//Axon
+input                       axon_soma_we         ;
+input  [NNW-1:0]            axon_soma_waddr      ;
+input  [SW-1:0]             axon_soma_wdata      ;
 
-reg [NNW-1:0] vm_addr;
+wire          vm_we;
+wire          vm_re;
+reg [NNW-1:0] vm_waddr;
+reg [NNW-1:0] vm_raddr;
 reg [VW-1:0 ] vm_wdata;
+reg [VW-1:0 ] VM_temp;
 reg           config_enable_dly;
+reg           config_soma_vld_dly;
+reg           config_soma_clear_dly;
+reg [NNW-1:0] config_soma_vm_addr_dly;
 
 dp_ram #(
     .RAM_WIDTH   (VW                  ),
@@ -84,34 +99,59 @@ dp_ram #(
     .rst_n       (rst_n               ),
     .write_clk   (clk_soma            ),
     .read_clk    (clk_soma            ),
-    .write_allow (config_soma_vm_we   ),
-    .read_allow  (config_soma_vm_re   ),
-    .write_addr  (vm_addr             ),
-    .read_addr   (config_soma_vm_raddr),
+    .write_allow (vm_we               ),
+    .read_allow  (vm_re               ),
+    .write_addr  (vm_waddr            ),
+    .read_addr   (vm_raddr            ),
     .write_data  (vm_wdata            ),
     .read_data   (config_soma_vm_rdata)
 );
 
 
-//config write reset
-always @* begin
-    if(config_soma_vld && config_soma_clear) begin
-        vm_addr  = config_soma_vm_addr;
+// v_mem write logic
+assign vm_we = config_soma_vm_we || axon_soma_we || config_soma_vld_dly;
+always @( *) begin
+    if(config_soma_vld_dly && config_soma_clear_dly) begin
+        vm_waddr = config_soma_vm_addr_dly;
         vm_wdata = 0;
     end
+    else if(config_soma_vld_dly && !config_soma_clear_dly)begin
+        vm_waddr = config_soma_vm_addr_dly;
+        vm_wdata = VM_temp;
+    end
+    else if (axon_soma_we) begin
+        vm_waddr = axon_soma_waddr;
+        vm_wdata = axon_soma_wdata;
+    end
     else begin
-        vm_addr  = config_soma_vm_waddr;
+        vm_waddr = config_soma_vm_waddr;
         vm_wdata = config_soma_vm_wdata;
     end
 end
 
-reg config_soma_vm_we_r;
-//read first
-always @(posedge clk or negedge rst_n)
-    if(rst_n)
-        config_soma_vm_we_r <= 0;
-    else if(config_soma_vm_re)
-        config_soma_vm_we_r <= config_soma_vm_we;
+// v_mem read logic
+assign vm_re = config_soma_vm_re || (config_soma_vld && !config_soma_clear);
+always @( *) begin
+    if (config_soma_vld) begin
+        vm_raddr = config_soma_vm_addr;
+    end
+    else begin
+        vm_raddr = config_soma_vm_raddr;
+    end
+end
+
+//write enable
+always @(posedge clk_soma or negedge rst_n)
+    if(!rst_n) begin
+        config_soma_vld_dly <= 0; 
+        config_soma_clear_dly <= 0;
+        config_soma_vm_addr_dly <= 0;
+    end
+    else begin
+        config_soma_vld_dly <= config_soma_vld;
+        config_soma_clear_dly <= config_soma_clear;
+        config_soma_vm_addr_dly <= config_soma_vm_addr;
+    end
 
 wire [VW-1:0] V_rand;
 lfsr #(
@@ -126,7 +166,7 @@ lfsr #(
     .o_LFSR_Done()  
 );
 
-always @(posedge clk or negedge rst_n) begin
+always @(posedge clk_soma or negedge rst_n) begin
     if (!rst_n) config_enable_dly <= 1'b0;
     else config_enable_dly <= config_soma_enable;
 end
@@ -147,47 +187,51 @@ Poisson_code #(
     .p         (VM_P )
 );
 
-reg         [VW-1:0] VM_temp;
-wire signed [VW:0  ] V_reset;
+wire signed [VW:0] V_reset;
+reg [VW-1:0] VM_t;
+reg [VW-1:0] VM_out;
 
 assign {n,k} = config_soma_vm_rdata;
 //MUX1 VM Select
 always @*
     case(config_soma_code)
-        2'b00: VM_temp = config_soma_vm_rdata + sd_soma_vm - config_soma_leak; 
-        2'b10: begin
+        2'b00: begin
+            if(soma_spk_out_fire)
+                VM_temp = V_reset;
+            else
+                VM_temp = config_soma_vm_rdata + sd_soma_vm - config_soma_leak;
+        end
+        2'b01: begin // count
+            VM_temp = config_soma_vm_rdata - config_soma_leak;
+        end
+        2'b10: begin  // poisson
             if(soma_spk_out_fire)
                 VM_temp = {n,k+1};
             else
                 VM_temp = {n,k};
         end
         default: begin
-            if(soma_spk_out_fire)
-                VM_temp = V_reset;
-            else
-                VM_temp = config_soma_vm_rdata + sd_soma_vm - config_soma_leak;
+            VM_temp = {VW{1'b0}};
         end
     endcase
 
-assign V_reset = config_soma_reset ? 0: -config_soma_vth;
+assign V_reset = config_soma_reset ? (VM_out - config_soma_vth) : 0; // TODO
 
-reg [VW-1:0] VM_t;
 //MUX2 threshold value select
 always @*
     case(config_soma_code)
         2'b00: VM_t = config_soma_vth;
-        2'b01: VM_t = V_rand         ;
-        2'b10: VM_t = config_soma_vth;
+        2'b01: VM_t = config_soma_vth;
+        2'b10: VM_t = V_rand;
         2'b11: VM_t = config_soma_vth;
     endcase
 
-reg [VW-1:0] VM_out;
 //MUX3 compare value select
 always @*
     case(config_soma_code)
         2'b00: VM_out = config_soma_vm_rdata + sd_soma_vm;
-        2'b01: VM_out = 0;
-        2'b10: VM_out = VM_P;               
+        2'b01: VM_out = config_soma_vm_rdata;
+        2'b10: VM_out = VM_P;
         2'b11: VM_out = 0;
     endcase
 

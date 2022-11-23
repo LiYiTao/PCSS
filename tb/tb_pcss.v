@@ -14,8 +14,8 @@ parameter P_HIER          = 7 ;
 parameter CHIPDATA_WIDTH  = 16;
 
 // localparam
-localparam CFG_LEN = 43;
-localparam SPK_LEN = 5;
+localparam CFG_LEN = 45;
+localparam SPK_LEN = 8;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
 

@@ -77,6 +77,7 @@ wire [NNW-1:0]        config_axon_stride_log;
 wire [NNW-1:0]        config_sd_vm_addr;
 wire                  config_sd_vld;
 wire                  config_sd_clear;
+wire                  config_sd_start;
 wire                  config_sd_vm_we;
 wire [NNW-1:0]        config_sd_vm_waddr;
 wire [VW-1:0]         config_sd_vm_wdata;
@@ -222,7 +223,6 @@ the_sd
     // system signal
     .clk_SD(clk),
     .rst_n(rst_n),
-    .tik(tik),
     // Axon
     .axon_sd_vm_addr(axon_sd_vm_addr),
     .axon_sd_wgt_addr(axon_sd_wgt_addr),
@@ -234,6 +234,7 @@ the_sd
     .config_sd_vm_addr(config_sd_vm_addr),
     .config_sd_vld(config_sd_vld),
     .config_sd_clear(config_sd_clear),
+    .config_sd_start(config_sd_start),
     .config_sd_vm_we(config_sd_vm_we),
     .config_sd_vm_waddr(config_sd_vm_waddr),
     .config_sd_vm_wdata(config_sd_vm_wdata),
@@ -287,7 +288,11 @@ the_soma
     .config_soma_vm_raddr(config_soma_vm_raddr),
     .config_soma_vm_rdata(config_soma_vm_rdata),
     .config_soma_random_seed(config_soma_random_seed),
-    .config_soma_enable(config_soma_enable)
+    .config_soma_enable(config_soma_enable),
+    // axon
+    .axon_soma_we(axon_soma_we),
+    .axon_soma_waddr(axon_soma_waddr),
+    .axon_soma_wdata(axon_soma_wdata)
 );
 
 // config
@@ -333,6 +338,7 @@ the_config_top
     .config_sd_vm_addr(config_sd_vm_addr),
     .config_sd_vld(config_sd_vld),
     .config_sd_clear(config_sd_clear),
+    .config_sd_start(config_sd_start),
     // soma
     .config_soma_vld(config_soma_vld),
     .config_soma_clear(config_soma_clear),

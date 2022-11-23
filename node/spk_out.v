@@ -265,9 +265,7 @@ always @(posedge clk or negedge rst_n) begin
     else begin
         case (cs)
             S_IDLE : begin
-                if (ns == S_WAIT) begin
-                    dst_mem_raddr <= {(DST_DEPTH){1'b0}};
-                end
+                // free
             end
             S_WAIT : begin
                 if (ns != S_WAIT) begin
@@ -283,7 +281,7 @@ always @(posedge clk or negedge rst_n) begin
                 end
             end
             S_SEND : begin
-                if (!dst_flag && !spk_out_fifo_empty) begin
+                if (!dst_flag) begin
                     dst_mem_raddr <= {(DST_DEPTH){1'b0}};
                 end
             end

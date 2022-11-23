@@ -1,5 +1,5 @@
 module chip_connection #(
-    parameter FW = 64, // TODO
+    parameter FW = 59, // TODO
     parameter B = 4,
     parameter CONNECT = 2
 ) (
@@ -105,6 +105,7 @@ wire [CONNECT-1:0] buffer_not_empty;
 wire [CONNECT-1:0] mux_out_buffer_grant;
 wire [FW-1:0] mux_out_buffer_data [CONNECT-1:0];
 wire [log2(CONNECT)-1:0] sel;
+reg  [log2(CONNECT)-1:0] sel_dly;
 
 genvar i;
 generate
@@ -142,7 +143,7 @@ always @(posedge clk or negedge rst_n) begin
         data_out_wr <= |mux_out_buffer_grant & ~send_fifo_full;
     end
 end
-assign data_out = {sel, mux_out_buffer_data[sel]};
+assign data_out = {sel_dly, mux_out_buffer_data[sel_dly]};
 
 // arbiter
 arbiter #(
@@ -166,6 +167,15 @@ connect_sel
     .one_hot_code(mux_out_buffer_grant),
     .bin_code(sel)
 );
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        sel_dly <= {(log2(CONNECT)){1'b0}};
+    end
+    else begin
+        sel_dly <= sel;
+    end
+end
     
 endmodule
 
@@ -210,7 +220,7 @@ assign decrease = flit_in_wr_noc;
 genvar i;
 generate
     
-    assign sel = data_in[FW+log2(CONNECT)-1:FW-1];
+    assign sel = data_in[FW+log2(CONNECT)-1:FW];
 
     for (i=0; i<CONNECT; i=i+1) begin : in_connect
         
