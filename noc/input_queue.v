@@ -193,22 +193,23 @@ always @(posedge clk or negedge rst_n) begin
         dest_cand <= {P{1'b0}};
         flit_hold <= {FW{1'b0}};
     end
-    else if (inport_not_empty && !hold) begin // rd_en
-        hold <= 1'b1;
-    end
-    else if (hold && !hold_dly) begin // get dest_port and flit, gen req
-        dest_cand <= dest_port;
-        // flit update
-        flit_hold <= flit_from_buffer;
-    end
-    else if (|grant_dest_port) begin
-        dest_cand <= dest_cand ^ grant_dest_port;
-        if (dest_cand ^ grant_dest_port == {P{1'b0}}) begin
-            hold <= 1'b0;
+    else begin
+        hold_dly <= hold;
+        if (inport_not_empty && !hold) begin // rd_en
+            hold <= 1'b1;
+        end
+        else if (hold && !hold_dly) begin // get dest_port and flit, gen req
+            dest_cand <= dest_port;
+            // flit update
+            flit_hold <= flit_from_buffer;
+        end
+        else if (|grant_dest_port) begin
+            dest_cand <= dest_cand ^ grant_dest_port;
+            if (dest_cand ^ grant_dest_port == {P{1'b0}}) begin
+                hold <= 1'b0;
+            end
         end
     end
-
-    hold_dly <= hold;
 end
 
 always @(*) begin
