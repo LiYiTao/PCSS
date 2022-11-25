@@ -36,7 +36,7 @@ module spk_out #(
     input  [DST_WIDTH-1:0] config_spk_out_dst_wdata,
     input  config_spk_out_dst_re,
     input  [DST_DEPTH-1:0] config_spk_out_dst_raddr,
-    input  [DST_WIDTH-1:0] config_spk_out_dst_rdata
+    output [DST_WIDTH-1:0] config_spk_out_dst_rdata
 );
 
 wire spk_out_push;
