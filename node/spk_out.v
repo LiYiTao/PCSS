@@ -44,6 +44,7 @@ wire [FW-1:0] spk_out_push_data;
 wire spk_out_fifo_full;
 wire spk_out_pop;
 wire [FW-1:0] spk_out_pop_data;
+wire spk_out_fifo_empty;
 
 data_Recv #(
     .FW                     (FW),
@@ -173,7 +174,7 @@ module flit_send
     input  [DST_WIDTH-1:0] config_spk_out_dst_wdata,
     input  config_spk_out_dst_re,
     input  [DST_DEPTH-1:0] config_spk_out_dst_raddr,
-    input  [DST_WIDTH-1:0] config_spk_out_dst_rdata,
+    output [DST_WIDTH-1:0] config_spk_out_dst_rdata,
     // spk_out_fifo
     output spk_out_pop,
     input  [FW-1:0] spk_out_pop_data,

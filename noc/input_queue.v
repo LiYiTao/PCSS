@@ -31,6 +31,7 @@ localparam X_FLG = R_FLG + 12;
 
 wire inport_not_empty;
 wire rd_en;
+wire hold;
 wire [XW-1:0] delta_x;
 wire [YW-1:0] delta_y;
 wire [XW-1:0] delta_x_next;

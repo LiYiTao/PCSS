@@ -156,8 +156,8 @@ always @(posedge clk_soma or negedge rst_n)
 wire [VW-1:0] V_rand;
 lfsr #(
     .NUM_BITS   (VW) // TODO
-) rand(
-    .clk        (clk),
+) lfsr_rand(
+    .clk        (clk_soma),
     .rst_n      (rst_n),
     .i_Enable   (1'b1), 
     .i_Seed_DV  (config_soma_enable && !config_enable_dly), 
