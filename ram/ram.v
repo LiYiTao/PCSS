@@ -11,6 +11,8 @@ module fifo_ram #(
     output [DATA_WIDTH-1:0] rd_data
 );
     reg [DATA_WIDTH-1:0] memory_rd_data;
+
+    (* RAM_STYLE="{AUTO | DISTRIBUTED | PIPE_DISTRIBUTED}" *)
     reg [DATA_WIDTH-1:0] queue [2**ADDR_WIDTH-1:0];
 
 always @(posedge clk) begin

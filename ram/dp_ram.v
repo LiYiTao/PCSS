@@ -38,6 +38,8 @@ module dp_ram
  
  reg   [RAM_WIDTH-1:0]      read_data;
  
+
+ (* RAM_STYLE="{AUTO | BLOCK |  BLOCK_POWER1 | BLOCK_POWER2}" *)
  reg   [RAM_WIDTH-1:0]      memory[2**ADDR_WIDTH-1:0];  
  
  integer i;

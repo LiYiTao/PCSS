@@ -1,5 +1,6 @@
 `timescale  1ns / 1ps
 `define debug
+//`define VCD_DUMP
 
 module tb_pcss_top;
 
@@ -159,11 +160,20 @@ always @(posedge clk) begin
     end
 end
 
-//  initial begin
-//     $fsdbDumpfile("pcss.fsdb");
-//     $fsdbDumpvars(); // 0,tb_xor_top.x_darwin_top
-//     $fsdbDumpMDA();
-//  end
+ initial begin
+    `ifdef FSDB_DUMP
+        $display("fsdb dump...");
+        $fsdbDumpfile("pcss.fsdb");
+        $fsdbDumpvars(); // 0,tb_xor_top.x_darwin_top
+        $fsdbDumpMDA();
+    `endif
+
+    `ifdef VCD_DUMP
+        $display("vcd dump...");
+        $dumpfile("pcss.vcd");
+        $dumpvars(0);
+    `endif
+ end
 
 // PCSS
 pcss_top #(

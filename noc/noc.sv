@@ -14,7 +14,19 @@ module noc #(
     parameter YW = 4,
     parameter CONNECT = 2, // NX,NY
     parameter P_MESH = 5,
-    parameter P_HIER = 7
+    parameter P_HIER = 7,
+    parameter FTW = 3,  // flit type width
+    parameter ATW = 3,  // address type width
+    parameter CDW = 21, // config data width
+    parameter CAW = 15, // config addres width
+    parameter NNW = 12, // neural number width
+    parameter WW = 16, // weight width
+    parameter WD = 6, // weight depth (8x8)
+    parameter VW = 20, // Vm width
+    parameter SW = 24, // spk width, (x,y,z)
+    parameter CODE_WIDTH = 2, // spike code width
+    parameter DST_WIDTH = 21, // x+y+r2+r1+flg
+    parameter DST_DEPTH = 4 // dst node depth
 ) (
     // system signal
     input  clk,
@@ -248,7 +260,22 @@ generate
 
                     // node
                     node #(
-                        .FW(FW)
+                        .B(B),
+                        .FW(FW),
+                        .XW(XW),
+                        .YW(YW),
+                        .FTW(FTW),
+                        .ATW(ATW),
+                        .CDW(CDW),
+                        .CAW(CAW),
+                        .NNW(NNW),
+                        .WW(WW),
+                        .WD(WD),
+                        .VW(VW),
+                        .SW(SW),
+                        .CODE_WIDTH(CODE_WIDTH),
+                        .DST_WIDTH(DST_WIDTH),
+                        .DST_DEPTH(DST_DEPTH)
                     )
                     node_top
                     (
