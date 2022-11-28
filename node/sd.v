@@ -91,7 +91,6 @@ dp_ram #(
     .RAM_WIDTH   (WW                  ),
     .ADDR_WIDTH  (WD                  )
 ) weight_mem (
-    .rst_n       (rst_n               ),
     .write_clk   (clk_SD              ),
     .read_clk    (clk_SD              ),
     .write_allow (config_sd_wgt_we    ),
@@ -124,7 +123,6 @@ pq_buffer #(
     .ADDR_WIDTH  (NNW                )
 ) vm_buffer (
     .clk         (clk_SD),
-    .rst_n       (rst_n),
     .wr_en1      (config_sd_vld),
     .wr_en2      (config_sd_vm_we || axon_sd_vld_dly),
     .rd_en1      (config_sd_vld & !config_sd_clear  ),

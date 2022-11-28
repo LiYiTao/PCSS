@@ -12,8 +12,7 @@ module fifo_ram #(
 );
     reg [DATA_WIDTH-1:0] memory_rd_data;
 
-    (* RAM_STYLE="{AUTO | DISTRIBUTED | PIPE_DISTRIBUTED}" *)
-    reg [DATA_WIDTH-1:0] queue [2**ADDR_WIDTH-1:0];
+    (* ram_style="distributed" *) reg [DATA_WIDTH-1:0] queue [2**ADDR_WIDTH-1:0];
 
 always @(posedge clk) begin
     if (wr_en) begin

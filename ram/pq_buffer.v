@@ -16,7 +16,6 @@ module pq_buffer
 )
 (
     clk                     ,
-    rst_n                   ,
     rd_en1                  ,
     rd_en2                  ,
     wr_en1                  ,
@@ -34,7 +33,6 @@ module pq_buffer
 );
 
 input                  clk     ;
-input                  rst_n   ;
 input                  rd_en1  ;
 input                  rd_en2  ;
 input                  wr_en1  ;
@@ -95,7 +93,6 @@ dp_ram #(
     .RAM_WIDTH   (DATA_WIDTH         ),
     .ADDR_WIDTH  (ADDR_WIDTH         )
 ) bunit1(
-    .rst_n       (rst_n              ),
     .write_clk   (clk                ),
     .read_clk    (clk                ),
     .write_allow (bunit1_we          ),
@@ -110,7 +107,6 @@ dp_ram #(
     .RAM_WIDTH   (DATA_WIDTH         ),
     .ADDR_WIDTH  (ADDR_WIDTH         )
 ) bunit2(
-    .rst_n       (rst_n              ),
     .write_clk   (clk                ),
     .read_clk    (clk                ),
     .write_allow (bunit2_we          ),

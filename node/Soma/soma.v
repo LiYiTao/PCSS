@@ -96,7 +96,6 @@ dp_ram #(
     .RAM_WIDTH   (VW                  ),
     .ADDR_WIDTH  (NNW                 )
 ) vm_mem (
-    .rst_n       (rst_n               ),
     .write_clk   (clk_soma            ),
     .read_clk    (clk_soma            ),
     .write_allow (vm_we               ),

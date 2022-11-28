@@ -6,8 +6,6 @@ module dp_ram
      parameter ADDR_WIDTH = 4        //number of bits required to represent the RAM address
 )
 (
-     rst_n,
-
      write_clk,
 	 read_clk,                    //读写时钟
 	 
@@ -20,8 +18,6 @@ module dp_ram
 	 write_data,
 	 read_data                    //读写数据
 	);
-	
- input                      rst_n;
 
  input                      write_clk;
  input                      read_clk;
@@ -39,25 +35,20 @@ module dp_ram
  reg   [RAM_WIDTH-1:0]      read_data;
  
 
- (* RAM_STYLE="{AUTO | BLOCK |  BLOCK_POWER1 | BLOCK_POWER2}" *)
- reg   [RAM_WIDTH-1:0]      memory[2**ADDR_WIDTH-1:0];  
+ (* ram_style="block" *) reg [RAM_WIDTH-1:0] memory [2**ADDR_WIDTH-1:0];
  
  integer i;
- always @(posedge write_clk or negedge rst_n)
-     begin
-		 if(!rst_n) begin
-             for(i=1;i<2**ADDR_WIDTH;i=i+1)
-             memory[i] <= 0;
-		 end
-	     else if(write_allow) begin
-		     memory[write_addr] <=  write_data;
-		 end 
+ always @(posedge write_clk)
+    begin
+	    if(write_allow) begin
+		    memory[write_addr] <=  write_data;
+		end 
 	end
 
  always @(posedge read_clk)
      begin
-	     if(read_allow)
-		     read_data <= memory[read_addr]; 
+	    if(read_allow)
+		    read_data <= memory[read_addr]; 
 	end
 
 endmodule
