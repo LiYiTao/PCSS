@@ -1,5 +1,6 @@
 `timescale  1ns / 1ps
 `define debug
+`define SAIF
 //`define VCD_DUMP
 
 module tb_pcss_top;
@@ -148,6 +149,11 @@ initial begin
         @(posedge clk);
     end
 
+    `ifdef SAIF
+        $toggle_stop;
+        $toggle_report("pcss.saif", 1.0e-9,"pcss_top");
+    `endif
+
     #1000;
     $finish;
 end
@@ -161,6 +167,12 @@ always @(posedge clk) begin
 end
 
  initial begin
+    `ifdef SAIF
+        $display("saif dump...");
+        $set_toggle_region(pcss_top);
+        $toggle_start;
+    `endif
+
     `ifdef FSDB_DUMP
         $display("fsdb dump...");
         $fsdbDumpfile("pcss.fsdb");
