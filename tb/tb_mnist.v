@@ -1,6 +1,6 @@
 `timescale  1ns / 1ps
 `define debug
-`define SAIF
+// `define SAIF
 //`define VCD_DUMP
 
 module tb_pcss_top;
@@ -14,11 +14,11 @@ parameter CONNECT_WIDTH   = 5 ;
 parameter P_MESH          = 5 ;
 parameter P_HIER          = 7 ;
 parameter CHIPDATA_WIDTH  = 16;
-parameter NNW             = 9; // TODO neural number width
+parameter NNW             = 10; // TODO neural number width
 
 // localparam
-localparam CFG_LEN = 45;
-localparam SPK_LEN = 8;
+localparam CFG_LEN = 2577;
+localparam SPK_LEN = 786;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
 
@@ -133,6 +133,11 @@ initial begin
         pcss_send(cfg_data[j]);
     end
 
+    $display("send data...");
+    for (j=0; j<SPK_LEN; j=j+1) begin
+        pcss_send(spk_data[j]);
+    end
+
     for (i=0; i<100; i=i+1) begin //wait configure ready
         @(posedge clk);
     end
@@ -140,11 +145,12 @@ initial begin
     // work mode
     enable = 1;
     $display("Work mode");
-    for (j=0; j<SPK_LEN; j=j+1) begin
-        time_step = spk_data[j][FW+CONNECT_WIDTH+TIK_CNT-1 : FW+CONNECT_WIDTH];
-        wait (tik_cnt == time_step);
-        pcss_send(spk_data[j]);
-    end
+    wait (tik_cnt == 5);
+    // for (j=0; j<SPK_LEN; j=j+1) begin
+    //     time_step = spk_data[j][FW+CONNECT_WIDTH+TIK_CNT-1 : FW+CONNECT_WIDTH];
+    //     wait (tik_cnt == time_step);
+    //     pcss_send(spk_data[j]);
+    // end
 
     for (i=0; i<100; i=i+1) begin //wait spk out
         @(posedge clk);
@@ -198,7 +204,8 @@ pcss_top #(
     .CHIPDATA_WIDTH ( CHIPDATA_WIDTH ),
     .NNW            ( NNW )
 )
- u_pcss_top (
+u_pcss_top
+(
     .clk                     ( clk                                     ),
     .rst_n                   ( rst_n                                   ),
     .tik                     ( tik                                     ),
@@ -259,7 +266,7 @@ begin
     @(posedge clk);
     #1;
     // send 1
-    $display ("Send 16 bits .....1");
+    // $display ("Send 16 bits .....1");
     while(recv_data_ready_E == 1'b1)begin
         @(posedge clk);
     end
@@ -291,7 +298,7 @@ begin
     */
 
     // send 2
-    $display ("Send 16 bits .....2");
+    // $display ("Send 16 bits .....2");
     while(recv_data_ready_E == 1'b1)begin
         @(posedge clk);
     end
@@ -307,7 +314,7 @@ begin
     recv_data_valid_E = 1'b0;
 
     // send 3
-    $display ("Send 16 bits .....3");
+    // $display ("Send 16 bits .....3");
     while(recv_data_ready_E == 1'b1)begin
         @(posedge clk);
     end
@@ -323,7 +330,7 @@ begin
     recv_data_valid_E = 1'b0;
 
     // send 4
-    $display ("Send 16 bits .....4");
+    // $display ("Send 16 bits .....4");
     while(recv_data_ready_E == 1'b1)begin
         @(posedge clk);
     end
