@@ -155,7 +155,7 @@ connect_arbiter
     .reset(!rst_n),
     .request(buffer_not_empty),
     .grant(mux_out_buffer_grant),
-    .any_grant()
+    .any_grant(1'b0)
 );
 
 // select

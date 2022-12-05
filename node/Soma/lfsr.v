@@ -25,7 +25,6 @@ module lfsr #(
 ) (  
     input                  clk,  
     input                  rst_n,
-    input                  i_Enable,  
    
     // Optional Seed Value  
     input                  i_Seed_DV,  
@@ -46,13 +45,10 @@ module lfsr #(
         r_LFSR <= 0;
         end
         else  begin  
-            if (i_Enable == 1'b1)  
-            begin  
-                if (i_Seed_DV == 1'b1)  
-                r_LFSR <= i_Seed_Data;  
-                else  
-                r_LFSR <= {r_LFSR[NUM_BITS-1:1], r_XNOR};  
-            end  
+            if (i_Seed_DV == 1'b1)  
+            r_LFSR <= i_Seed_Data;  
+            else  
+            r_LFSR <= {r_LFSR[NUM_BITS-1:1], r_XNOR};  
         end  
     end
     
@@ -116,42 +112,42 @@ module lfsr #(
             20: begin  
             r_XNOR = r_LFSR[20] ^~ r_LFSR[17];  
             end  
-            21: begin  
-            r_XNOR = r_LFSR[21] ^~ r_LFSR[19];  
-            end  
-            22: begin  
-            r_XNOR = r_LFSR[22] ^~ r_LFSR[21];  
-            end  
-            23: begin  
-            r_XNOR = r_LFSR[23] ^~ r_LFSR[18];  
-            end  
-            24: begin  
-            r_XNOR = r_LFSR[24] ^~ r_LFSR[23] ^~ r_LFSR[22] ^~ r_LFSR[17];  
-            end  
-            25: begin  
-            r_XNOR = r_LFSR[25] ^~ r_LFSR[22];  
-            end  
-            26: begin  
-            r_XNOR = r_LFSR[26] ^~ r_LFSR[6] ^~ r_LFSR[2] ^~ r_LFSR[1];  
-            end  
-            27: begin  
-            r_XNOR = r_LFSR[27] ^~ r_LFSR[5] ^~ r_LFSR[2] ^~ r_LFSR[1];  
-            end  
-            28: begin  
-            r_XNOR = r_LFSR[28] ^~ r_LFSR[25];  
-            end  
-            29: begin  
-            r_XNOR = r_LFSR[29] ^~ r_LFSR[27];  
-            end  
-            30: begin  
-            r_XNOR = r_LFSR[30] ^~ r_LFSR[6] ^~ r_LFSR[4] ^~ r_LFSR[1];  
-            end  
-            31: begin  
-            r_XNOR = r_LFSR[31] ^~ r_LFSR[28];  
-            end  
-            32: begin  
-            r_XNOR = r_LFSR[32] ^~ r_LFSR[22] ^~ r_LFSR[2] ^~ r_LFSR[1];  
-            end  
+            // 21: begin  
+            // r_XNOR = r_LFSR[21] ^~ r_LFSR[19];  
+            // end  
+            // 22: begin  
+            // r_XNOR = r_LFSR[22] ^~ r_LFSR[21];  
+            // end  
+            // 23: begin  
+            // r_XNOR = r_LFSR[23] ^~ r_LFSR[18];  
+            // end  
+            // 24: begin  
+            // r_XNOR = r_LFSR[24] ^~ r_LFSR[23] ^~ r_LFSR[22] ^~ r_LFSR[17];  
+            // end  
+            // 25: begin  
+            // r_XNOR = r_LFSR[25] ^~ r_LFSR[22];  
+            // end  
+            // 26: begin  
+            // r_XNOR = r_LFSR[26] ^~ r_LFSR[6] ^~ r_LFSR[2] ^~ r_LFSR[1];  
+            // end  
+            // 27: begin  
+            // r_XNOR = r_LFSR[27] ^~ r_LFSR[5] ^~ r_LFSR[2] ^~ r_LFSR[1];  
+            // end  
+            // 28: begin  
+            // r_XNOR = r_LFSR[28] ^~ r_LFSR[25];  
+            // end  
+            // 29: begin  
+            // r_XNOR = r_LFSR[29] ^~ r_LFSR[27];  
+            // end  
+            // 30: begin  
+            // r_XNOR = r_LFSR[30] ^~ r_LFSR[6] ^~ r_LFSR[4] ^~ r_LFSR[1];  
+            // end  
+            // 31: begin  
+            // r_XNOR = r_LFSR[31] ^~ r_LFSR[28];  
+            // end  
+            // 32: begin  
+            // r_XNOR = r_LFSR[32] ^~ r_LFSR[22] ^~ r_LFSR[2] ^~ r_LFSR[1];  
+            // end  
     
         endcase 
         end 

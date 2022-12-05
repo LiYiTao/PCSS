@@ -1,6 +1,6 @@
 `timescale  1ns / 1ps
 `define debug
-`define SAIF
+//`define SAIF
 //`define VCD_DUMP
 
 module tb_pcss_top;

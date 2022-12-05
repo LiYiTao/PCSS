@@ -92,7 +92,12 @@ wire node_credit_out_all [NXYR2R1-1:0];
 
 genvar x,y,i,j,k;
 generate
-
+    for (i=0; i<NR2; i=i+1) begin
+        for (k=0; k<NR2; k=k+1) begin
+            assign current_r1[i][k] = (i == k);
+        end
+    end
+    
     for (x=0; x<NX; x=x+1) begin : x_loop
         for (y=0; y<NY; y=y+1) begin : y_loop
 
@@ -216,10 +221,6 @@ generate
 
 
             for (i=0; i<NR2; i=i+1) begin : r2_loop
-
-                for (k=0; k<NR2; k=k+1) begin
-                    assign current_r1[i][k] = (i == k);
-                end
 
                 // router_hier1
                 router #(

@@ -47,10 +47,7 @@ flit_Recv
     .FTW                        ( FTW         )
 )
 the_flit_recv
-(
-    // port list
-    .clk                        ( clk_spk_in            ),          
-    .rst_n                      ( rst_n                 ),         
+(      
     // aer_in,       
     .flit_in_wr                 ( flit_in_wr            ),       
     .flit_in                    ( flit_in               ),
@@ -77,7 +74,7 @@ spk_in_fifo
     .rd_en                       ( spk_in_pop           ),
     .din                         ( spk_in_push_data     ),
     .dout                        ( spk_in_pop_data      ),
-    .almost_full                 (     ),
+    .almost_full                 ( 1'b0 ),
     .empty                       ( spk_in_fifo_empty    )
 );
 
@@ -115,9 +112,6 @@ module flit_Recv #(
     parameter FW = 37 , // flit width
     parameter FTW = 2   // flit type width
 ) (
-    // port list
-    input  clk ,
-    input  rst_n ,
     // aer_in
     input  flit_in_wr ,
     input  [FW-1:0] flit_in ,

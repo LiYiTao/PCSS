@@ -146,7 +146,7 @@ reg  [CAW-1:0] config_raddr_dly;
 wire [REG_DEPTH-1:0] config_reg_waddr;
 wire [REG_DEPTH-1:0] config_reg_raddr;
 wire [CDW-1:0] config_reg_wdata;
-wire [CDW-1:0] config_reg_rdata;
+reg  [CDW-1:0] config_reg_rdata;
 
 // output map
 assign config_soma_random_seed = nm_random_seed[VW-1:0];
@@ -212,35 +212,54 @@ assign config_sd_vm_wdata = config_wdata[VW-1:0];
 
 // read enable map
 always @(*) begin
-    config_reg_re = 1'b0;
-    config_sd_vm_re = 1'b0;
-    config_sd_wgt_re = 1'b0;
-    config_soma_vm_re = 1'b0;
-    config_spk_out_dst_re = 1'b0;
     case(config_raddr[CAW-1:CAW-ATW])
         CFG_REG : begin
             config_reg_re = config_re;
+            config_sd_vm_re = 1'b0;
+            config_sd_wgt_re = 1'b0;
+            config_soma_vm_re = 1'b0;
+            config_spk_out_dst_re = 1'b0;
         end
         WGT_MEM : begin
             config_sd_wgt_re = config_re;
+            config_reg_re = 1'b0;
+            config_sd_vm_re = 1'b0;
+            config_soma_vm_re = 1'b0;
+            config_spk_out_dst_re = 1'b0;
         end
         DST_MEM : begin
             config_spk_out_dst_re = config_re;
+            config_reg_re = 1'b0;
+            config_sd_vm_re = 1'b0;
+            config_sd_wgt_re = 1'b0;
+            config_soma_vm_re = 1'b0;
         end
         VM_MEM : begin
             config_soma_vm_re = config_re;
+            config_reg_re = 1'b0;
+            config_sd_vm_re = 1'b0;
+            config_sd_wgt_re = 1'b0;
+            config_spk_out_dst_re = 1'b0;
         end
         VM_BUF : begin
             config_sd_vm_re = config_re;
+            config_reg_re = 1'b0;
+            config_sd_wgt_re = 1'b0;
+            config_soma_vm_re = 1'b0;
+            config_spk_out_dst_re = 1'b0;
         end
         default : begin
-            // free
+            config_reg_re = 1'b0;
+            config_sd_vm_re = 1'b0;
+            config_sd_wgt_re = 1'b0;
+            config_soma_vm_re = 1'b0;
+            config_spk_out_dst_re = 1'b0;
         end
     endcase
 end
 
 // read address map
-assign config_reg_raddr = config_raddr[REG_DEPTH-1:0];
+assign config_reg_raddr = config_raddr_dly[REG_DEPTH-1:0];
 assign config_sd_wgt_raddr = config_raddr[WD-1:0];
 assign config_spk_out_dst_raddr = config_raddr[DST_DEPTH-1:0];
 assign config_soma_vm_raddr = config_raddr[NNW-1:0];
@@ -275,6 +294,56 @@ always @( *) begin
         end
         default : begin
             config_rdata = {(CDW/4){4'hE}};
+        end
+    endcase
+end
+
+always @(*) begin
+    case (config_reg_raddr)
+        STATUS : begin
+            config_reg_rdata = nm_status;
+        end
+        NEU_NUM : begin
+            config_reg_rdata = nm_neu_num;
+        end
+        VTH : begin
+            config_reg_rdata = nm_vth;
+        end
+        LEAK : begin
+            config_reg_rdata = nm_leak;
+        end
+        X_IN : begin
+            config_reg_rdata = nm_x_in;
+        end
+        Y_IN : begin
+            config_reg_rdata = nm_y_in;
+        end
+        Z_OUT : begin
+            config_reg_rdata = nm_z_out;
+        end
+        X_K : begin
+            config_reg_rdata = nm_x_k;
+        end
+        Y_K : begin
+            config_reg_rdata = nm_y_k;
+        end
+        X_OUT : begin
+            config_reg_rdata = nm_x_out;
+        end
+        Y_OUT : begin
+            config_reg_rdata = nm_y_out;
+        end
+        XK_YK : begin
+            config_reg_rdata = nm_xk_yk;
+        end
+        PAD : begin
+            config_reg_rdata = nm_pad;
+        end
+        STRIDE_LOG : begin
+            config_reg_rdata = nm_stride_log;
+        end
+        RAND_SEED : begin
+            config_reg_rdata = nm_random_seed;
         end
     endcase
 end
@@ -437,7 +506,7 @@ always @(posedge clk or negedge rst_n) begin
 end
 
 // random seed reg
-assign nm_random_seed_we = config_reg_we && (config_reg_waddr == STRIDE_LOG);
+assign nm_random_seed_we = config_reg_we && (config_reg_waddr == RAND_SEED);
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         nm_random_seed <= {CDW{1'b0}};

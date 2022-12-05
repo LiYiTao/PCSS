@@ -158,11 +158,10 @@ lfsr #(
 ) lfsr_rand(
     .clk        (clk_soma),
     .rst_n      (rst_n),
-    .i_Enable   (1'b1), 
     .i_Seed_DV  (config_soma_enable && !config_enable_dly), 
     .i_Seed_Data(config_soma_random_seed), 
     .o_LFSR_Data(V_rand),
-    .o_LFSR_Done()  
+    .o_LFSR_Done(1'b0)  
 );
 
 always @(posedge clk_soma or negedge rst_n) begin
@@ -233,15 +232,6 @@ always @*
         2'b10: VM_out = VM_P;
         2'b11: VM_out = 0;
     endcase
-
-reg config_soma_vm_we_dealy;
-always @(posedge clk_soma or negedge rst_n) begin
-    if(!rst_n)
-        config_soma_vm_we_dealy <= 1'b0;
-    else
-        config_soma_vm_we_dealy <= config_soma_vm_we;
-end
-
 
 always @* begin
     if(VM_out >= VM_t) begin

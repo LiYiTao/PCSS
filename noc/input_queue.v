@@ -113,7 +113,7 @@ dest_fifo
     .out(dest_from_fifo),
     .wr_en(flit_in_wr),
     .rd_en(rd_en),
-    .buffer_not_empty() // control in flit buffer
+    .buffer_not_empty(1'b0) // control in flit buffer
 );
 
 // release generate
@@ -142,8 +142,6 @@ req_gen #(
 )
 the_req_gen
 (
-    .clk(clk),
-    .rst_n(rst_n),
     .hold(hold),
     .dest_port_cand(dest_port_cand),
     .dest_port_req(dest_port_req)
@@ -154,8 +152,6 @@ endmodule
 module req_gen #(
     parameter P = 7
 ) (
-    input  clk,
-    input  rst_n,
     input  hold, // flit hold, wait all outport
     input  [P-1:0] dest_port_cand, // dest_port need request
     output [P-1:0] dest_port_req
@@ -205,7 +201,7 @@ always @(posedge clk or negedge rst_n) begin
         end
         else if (|grant_dest_port) begin
             dest_cand <= dest_cand ^ grant_dest_port;
-            if (dest_cand ^ grant_dest_port == {P{1'b0}}) begin
+            if ((dest_cand ^ grant_dest_port) == {P{1'b0}}) begin
                 hold <= 1'b0;
             end
         end
