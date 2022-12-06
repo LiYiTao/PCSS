@@ -113,7 +113,7 @@ dest_fifo
     .out(dest_from_fifo),
     .wr_en(flit_in_wr),
     .rd_en(rd_en),
-    .buffer_not_empty(1'b0) // control in flit buffer
+    .buffer_not_empty( ) // control in flit buffer
 );
 
 // release generate

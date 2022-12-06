@@ -74,7 +74,7 @@ spk_in_fifo
     .rd_en                       ( spk_in_pop           ),
     .din                         ( spk_in_push_data     ),
     .dout                        ( spk_in_pop_data      ),
-    .almost_full                 ( 1'b0 ),
+    .almost_full                 (  ),
     .empty                       ( spk_in_fifo_empty    )
 );
 

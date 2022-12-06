@@ -161,7 +161,7 @@ lfsr #(
     .i_Seed_DV  (config_soma_enable && !config_enable_dly), 
     .i_Seed_Data(config_soma_random_seed), 
     .o_LFSR_Data(V_rand),
-    .o_LFSR_Done(1'b0)  
+    .o_LFSR_Done( )  
 );
 
 always @(posedge clk_soma or negedge rst_n) begin
