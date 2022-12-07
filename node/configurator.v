@@ -71,6 +71,8 @@ module configurator #(
     output [SW/3-1:0] z_out,
     output [NNW-1:0] pad,
     output [NNW-1:0] stride_log,
+    output [SW/3-1:0] x_start,
+    output [SW/3-1:0] y_start,
     // ctrl signal
     output config_enable,
     output config_clear,
@@ -83,7 +85,7 @@ module configurator #(
 );
 
 // TODO reg bank depth
-localparam REG_DEPTH = 4;
+localparam REG_DEPTH = 5;
 
 // address define
 localparam CFG_REG  = 3'b000;
@@ -91,21 +93,23 @@ localparam WGT_MEM  = 3'b001;
 localparam DST_MEM  = 3'b010;
 localparam VM_MEM   = 3'b100;
 localparam VM_BUF   = 3'b110;
-localparam STATUS   = 4'h0;
-localparam NEU_NUM  = 4'h1;
-localparam VTH      = 4'h2;
-localparam LEAK     = 4'h3;
-localparam X_IN     = 4'h4;
-localparam Y_IN     = 4'h5;
-localparam Z_OUT    = 4'h6;
-localparam X_K      = 4'h7;
-localparam Y_K      = 4'h8;
-localparam X_OUT    = 4'h9;
-localparam Y_OUT    = 4'ha;
-localparam PAD      = 4'hb;
-localparam STRIDE_LOG = 4'hc;
-localparam XK_YK    = 4'hd;
-localparam RAND_SEED = 4'he;
+localparam STATUS   = 5'h0;
+localparam NEU_NUM  = 5'h1;
+localparam VTH      = 5'h2;
+localparam LEAK     = 5'h3;
+localparam X_IN     = 5'h4;
+localparam Y_IN     = 5'h5;
+localparam Z_OUT    = 5'h6;
+localparam X_K      = 5'h7;
+localparam Y_K      = 5'h8;
+localparam X_OUT    = 5'h9;
+localparam Y_OUT    = 5'ha;
+localparam PAD      = 5'hb;
+localparam STRIDE_LOG = 5'hc;
+localparam XK_YK      = 5'hd;
+localparam RAND_SEED  = 5'he;
+localparam X_START    = 5'hf;
+localparam Y_START    = 5'h10;
 
 // reg bank
 reg  [CDW-1:0] nm_status;
@@ -123,6 +127,8 @@ reg  [CDW-1:0] nm_pad;
 reg  [CDW-1:0] nm_stride_log;
 reg  [CDW-1:0] nm_xk_yk;
 reg  [CDW-1:0] nm_random_seed;
+reg  [CDW-1:0] nm_x_start;
+reg  [CDW-1:0] nm_y_start;
 
 wire nm_status_we;
 wire nm_neu_num_we;
@@ -139,6 +145,8 @@ wire nm_pad_we;
 wire nm_stride_log_we;
 wire nm_xk_yk_we;
 wire nm_random_seed_we;
+wire nm_x_start_we;
+wire nm_y_start_we;
 
 reg  config_reg_we;
 reg  config_reg_re;
@@ -167,6 +175,8 @@ assign spike_code = nm_status[3:2];
 assign neu_num = nm_neu_num[NNW-1:0];
 assign config_soma_vth = nm_vth[VW-1:0];
 assign config_soma_leak = nm_leak[VW-1:0];
+assign x_start = nm_x_start[SW/3-1:0];
+assign y_start = nm_y_start[SW/3-1:0];
 
 // write enable map
 always @(*) begin
@@ -345,6 +355,15 @@ always @(*) begin
         RAND_SEED : begin
             config_reg_rdata = nm_random_seed;
         end
+        X_START : begin
+            config_reg_rdata = nm_x_start;
+        end
+        Y_START : begin
+            config_reg_rdata = nm_y_start;
+        end
+        default : begin
+            config_reg_rdata = {(CDW/4){4'hE}};
+        end
     endcase
 end
 
@@ -513,6 +532,28 @@ always @(posedge clk or negedge rst_n) begin
     end
     else if (nm_random_seed_we) begin
         nm_random_seed <= config_reg_wdata;
+    end
+end
+
+// x_start reg
+assign nm_x_start_we = config_reg_we && (config_reg_waddr == X_START);
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        nm_x_start <= {CDW{1'b0}};
+    end
+    else if (nm_x_start_we) begin
+        nm_x_start <= config_reg_wdata;
+    end
+end
+
+// y_start reg
+assign nm_y_start_we = config_reg_we && (config_reg_waddr == Y_START);
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        nm_y_start <= {CDW{1'b0}};
+    end
+    else if (nm_y_start_we) begin
+        nm_y_start <= config_reg_wdata;
     end
 end
 

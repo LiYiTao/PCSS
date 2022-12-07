@@ -25,6 +25,8 @@ class Node():
         self.leak = 0
         self.x_in = 3
         self.y_in = 3
+        self.x_start = 0
+        self.y_start = 0
         self.x_out = 2
         self.y_out = 2
         self.z_out = 1
@@ -92,9 +94,11 @@ class Node():
         '''
         self.neu_num = neu_num - 1 # TODO
 
-    def set_conv(self,xin,yin,xout,yout,zout,xk,yk,pad,stride):
+    def set_conv(self,xin,yin,xstart,ystart,xout,yout,zout,xk,yk,pad,stride):
         self.x_in = xin
         self.y_in = yin
+        self.x_start = xstart
+        self.y_start = ystart
         self.x_out = xout
         self.y_out = yout
         self.z_out = zout
@@ -244,6 +248,20 @@ class Configuration(object):
             waddr += 1
             ss = "%018x" % (flit_head + (waddr << 21) + node.rand_seed)
             f.write(ss+'\n')
+            '''
+            x_start
+            addr : 0xf
+            '''
+            waddr += 1
+            ss = "%018x" % (flit_head + (waddr << 21) + node.x_start)
+            f.write(ss+'\n')
+            '''
+            y_start
+            addr : 0xf
+            '''
+            waddr += 1
+            ss = "%018x" % (flit_head + (waddr << 21) + node.y_start)
+            f.write(ss+'\n')
 
             # write wgt mem
             '''
@@ -322,8 +340,8 @@ class Input_Node():
         self.reset = reset
 
 
-    def gen_input(self,filename="spike.txt",feature_map=[]):
-        f=open(filename,'w')
+    def gen_input(self,filename="config.txt",feature_map=[]):
+        f=open(filename,'a')
 
         # unenable
         self.pclass = 0b110 # write

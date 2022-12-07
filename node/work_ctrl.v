@@ -42,6 +42,8 @@ module work_ctrl #(
     input  [NNW-1:0] neu_num,
     input  [NNW-1:0] x_in,
     input  [NNW-1:0] y_in,
+    input  [SW/3-1:0] x_start,
+    input  [SW/3-1:0] y_start,
     input  [SW/3-1:0] z_out
 );
 
@@ -230,7 +232,7 @@ always @(posedge clk or negedge rst_n) begin
         config_spk_out_neuid <= {SW{1'b0}};
     end
     else begin
-        config_spk_out_neuid <= {z_out, y_s, x_s};
+        config_spk_out_neuid <= {z_out, y_s+y_start, x_s+x_start};
     end
 end
 

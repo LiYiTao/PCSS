@@ -106,6 +106,8 @@ wire [NNW-1:0] neu_num;
 wire [CODE_WIDTH-1:0] spike_code;
 wire work_config_busy;
 wire [SW/3-1:0] config_work_z_out;
+wire [SW/3-1:0] config_work_x_start;
+wire [SW/3-1:0] config_work_y_start;
 
 // generate output
 assign config_soma_code = spike_code;
@@ -183,6 +185,8 @@ the_work_ctrl
     .neu_num(neu_num),
     .x_in(config_axon_x_in),
     .y_in(config_axon_y_in),
+    .x_start(config_work_x_start),
+    .y_start(config_work_y_start),
     .z_out(config_work_z_out)
 );
 
@@ -251,6 +255,8 @@ the_configurator
     .z_out(config_work_z_out),
     .pad(config_axon_pad),
     .stride_log(config_axon_stride_log),
+    .x_start(config_work_x_start),
+    .y_start(config_work_y_start),
     // ctrl signal
     .config_enable(config_enable),
     .config_clear(config_clear),
