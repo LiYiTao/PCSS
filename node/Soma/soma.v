@@ -92,6 +92,8 @@ reg           config_soma_vld_dly;
 reg           config_soma_clear_dly;
 reg [NNW-1:0] config_soma_vm_addr_dly;
 
+`ifdef FPGA
+
 dp_ram #(
     .RAM_WIDTH   (VW                  ),
     .ADDR_WIDTH  (NNW                 )
@@ -105,6 +107,24 @@ dp_ram #(
     .write_data  (vm_wdata            ),
     .read_data   (config_soma_vm_rdata)
 );
+`endif 
+
+`ifdef ASIC
+S55DRAM_W32D4096 vm_mem(
+    QA    (  ),
+    QB    (config_soma_vm_rdata  ),
+	CLKA  (clk_soma ),
+	CLKB  (clk_soma ),
+	CENA  (1'b1),
+	CENB  (1'b1),
+	WENA  (vm_we),
+	WENB  (~vm_re),
+	AA    (vm_waddr),
+	AB    (vm_raddr),
+	DA    (vm_wdata  ),
+	DB    (  )
+);
+`endif 
 
 
 // v_mem write logic

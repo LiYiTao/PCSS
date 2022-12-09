@@ -89,6 +89,8 @@ wire [DATA_WIDTH-1:0] dout_b2;
 assign din_b1 = bunit_sl  ? din1 : din2;
 assign din_b2 = !bunit_sl ? din1 : din2;
 
+`ifdef FPGA
+
 dp_ram #(
     .RAM_WIDTH   (DATA_WIDTH         ),
     .ADDR_WIDTH  (ADDR_WIDTH         )
@@ -116,6 +118,39 @@ dp_ram #(
     .write_data  (din_b2             ),
     .read_data   (dout_b2            )
 );
+`endif 
+
+`ifdef ASIC
+S55DRAM_W32D4096 bunit1(
+    QA    (  ),
+    QB    (dout_b1  ),
+	CLKA  (clk ),
+	CLKB  (clk ),
+	CENA  (1'b1),
+	CENB  (1'b1),
+	WENA  (bunit1_we),
+	WENB  (~bunit1_re),
+	AA    (waddr_b1),
+	AB    (raddr_b1),
+	DA    (din_b1  ),
+	DB    (  )
+);
+
+S55DRAM_W32D4096 bunit2(
+    QA    (  ),
+    QB    (dout_b2  ),
+	CLKA  (clk ),
+	CLKB  (clk ),
+	CENA  (1'b1),
+	CENB  (1'b1),
+	WENA  (bunit2_we),
+	WENB  (~bunit2_re),
+	AA    (waddr_b2),
+	AB    (raddr_b2),
+	DA    (din_b2  ),
+	DB    (  )
+);
+`endif 
 
 assign dout1 = bunit_sl  ? dout_b1 : dout_b2;
 assign dout2 = !bunit_sl ? dout_b1 : dout_b2;
