@@ -1,5 +1,7 @@
 `timescale  1ns / 1ps
 `define debug
+`define ASIC
+//`define FPGA
 //`define SAIF
 //`define VCD_DUMP
 
@@ -14,7 +16,7 @@ parameter CONNECT_WIDTH   = 5 ;
 parameter P_MESH          = 5 ;
 parameter P_HIER          = 7 ;
 parameter CHIPDATA_WIDTH  = 16;
-parameter NNW             = 9; // TODO neural number width
+parameter NNW             = 12; // TODO neural number width
 
 // localparam
 localparam CFG_LEN = 45;

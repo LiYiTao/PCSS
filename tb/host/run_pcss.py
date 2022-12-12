@@ -14,7 +14,7 @@ class Transmitter(object):
     def close(self):
         self.socket_inst.close()
         
-    def send_flit_bin(self, flit_bin_file):
+    def send_flit_bin(self, flit_bin_file, data_type):
         '''
         发送flit
         '''
@@ -22,17 +22,22 @@ class Transmitter(object):
             flit_bin = file.read()
         length = len(flit_bin) >> 2
         if length > 2**26:
-            print("===<2>=== %s is larger than 0.5GB" % flit_bin_file)
+            print("===<2>=== %s is larger than 0.25GB" % flit_bin_file)
             print("===<2>=== send flit length failed")
             return 0
-        self.socket_inst.sendall(struct.pack('I', length))
-        ack = self.socket_inst.recv(1024)
-        if (ack == b'done'):
-            print("===<2>=== send flit length succeed")
-        self.socket_inst.sendall(flit_bin)
+        send_bytes = bytearray()
+        send_bytes += struct.pack('I', length)
+        send_bytes += struct.pack('I', data_type)
+        send_bytes += flit_bin
+        #self.socket_inst.sendall(struct.pack('I', length))
+        #ack = self.socket_inst.recv(1024)
+        #if (ack == b'done'):
+        #    print("===<2>=== send flit length succeed")
+        #self.socket_inst.sendall(flit_bin)
+        self.socket_inst.sendall(send_bytes)
         return 1
 
-    def send_flit(self, flit_file):
+    def send_flit(self, flit_file, directions=0):
         '''
         发送flit
         '''
@@ -40,16 +45,19 @@ class Transmitter(object):
                 flit_list = file.readlines()
         length = len(flit_list)
         if length > 2**26:
-            print("===<2>=== %s is larger than 0.5GB" % flit_file)
+            print("===<2>=== %s is larger than 0.25GB" % flit_file)
             print("===<2>=== send flit length failed")
             return 0
-        self.socket_inst.sendall(struct.pack('I', length))
-        ack = self.socket_inst.recv(1024)
-        if (ack == b'done'):
-            print("===<2>=== send flit length succeed")
+        print("===<2>=== send flit length succeed")
+        #self.socket_inst.sendall(struct.pack('I', length))
+        #ack = self.socket_inst.recv(1024)
+        #if (ack == b'done'):
+        
         j = 0
         while(j < length):
             send_bytes = bytearray()
+            send_bytes += struct.pack('Q', length)
+            # send_bytes += struct.pack('I', 0x8000) # TODO tik
             for i in range(j,min(j + 16777216 * 4,length)):
                 send_bytes += struct.pack('Q', int(flit_list[i % length].strip(),16))
             self.socket_inst.sendall(send_bytes)
@@ -59,7 +67,7 @@ class Transmitter(object):
                 print("%s" % reply)
         return 1    
 
-def run_pcss(tc="", pre="", recv = True, ip = "10.11.8.238"):
+def run_pcss(tc="", pre="", recv = True, ip = "10.11.8.238"): # 10.11.8.238
     if tc != "" :
         if os.path.exists(tc):
             tc  = tc+"\\"
@@ -77,30 +85,30 @@ def run_pcss(tc="", pre="", recv = True, ip = "10.11.8.238"):
     print("===<2>=== send flit data   succeed")
     print('===<2>=== tcp sent elapsed : %.3f ms' % ((end_time - start_time)/1000000))
 
-    f = open(tc+"recv_"+pre+"flitout.txt", "w")
-    fbin = open(tc+"recv_"+pre+"flitout.bin", "wb")
+    f = open(tc+"recv_"+pre+"flitout.txt", "wb")
+    # fbin = open(tc+"recv_"+pre+"flitout.bin", "wb")
     start_time = time.time_ns()
-    hl = ""
+    hl = b""
     index = 0
     tot = 0
     while recv:
         request = trans.socket_inst.recv(1024)
         if len(request) <= 0:
             break
-        fbin.write(request)
+        # fbin.write(request)
         for i in range(len(request)):
-            b = "%02x" % request[i]
+            b = b"%02x" % request[i]
             hl = b + hl
             index = index + 1
-            if (index == 4):
-                f.write (hl + '\n')
+            if (index == 8):
+                f.write (hl + b"\n")
                 # print(hl)
-                hl = ""
+                hl = b""
                 index = 0
-                tot = tot + 1         
+                tot = tot + 1
     end_time = time.time_ns()
     f.close()
-    fbin.close()
+    # fbin.close()
     trans.socket_inst.close()
     print('===<2>=== tcp recv elapsed : %.3f ms with %d flits' % ((end_time - start_time)/1000000,tot))
 

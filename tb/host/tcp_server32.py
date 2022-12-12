@@ -66,12 +66,12 @@ class DMA_Transmitter(object):
             return 0                                                                   
         print("flit length: %d" % length)                                 
         with mmap.mmap(self.tx_dma_fd,DMA_MAP_SIZE,mmap.MAP_SHARED,mmap.PROT_WRITE | mmap.PROT_READ) as mm:
-            mm[DMA_LENGTH:DMA_LENGTH+4]=struct.pack('I',length)                                            
+            mm[DMA_LENGTH:DMA_LENGTH+4]=struct.pack('I',length)
             mm[:length]=flit_bin                                                                           
             fcntl.ioctl(self.tx_dma_fd, XFER, DMA_BINDEX)                                                  
-            tx_result = struct.unpack('I',mm[DMA_RES:DMA_RES+4])[0]                                        
+            tx_result = struct.unpack('I',mm[DMA_RES:DMA_RES+4])[0]
             if tx_result != 0:                                                                             
-                return 0                                                                                   
+                return 0
         return 1 
 
     def recv_flit_bin(self):
@@ -80,30 +80,32 @@ class DMA_Transmitter(object):
         '''                                                                                                
         recv = bytearray()                                                                                       
         with mmap.mmap(self.rx_dma_fd,DMA_MAP_SIZE,mmap.MAP_SHARED,mmap.PROT_WRITE | mmap.PROT_READ) as mm:
-            last = False                                                                                   
-            while not last:                                                                                
-                mm[DMA_LENGTH:DMA_LENGTH+4]=DMA_RX_LEN                                                     
-                fcntl.ioctl(self.rx_dma_fd, XFER, DMA_BINDEX)                                              
-                rx_result = struct.unpack('I',mm[DMA_RES:DMA_RES+4])[0]                                    
-                #print("rx_result is %d" % rx_result)
-                if rx_result == 0:                                                                         
-                    rx_length = struct.unpack('I',mm[DMA_LENGTH:DMA_LENGTH+4])[0]                          
-                    last_flit = struct.unpack('I',mm[rx_length-4:rx_length])[0]                            
-                    last = last_flit == 0xffffffff                                                         
-                    if not last:                                                                           
+            # last = False                                                                                   
+            # while not last:                                                                                
+                mm[DMA_LENGTH:DMA_LENGTH+4]=DMA_RX_LEN
+                fcntl.ioctl(self.rx_dma_fd, XFER, DMA_BINDEX)                                                                                                               
+                rx_length = struct.unpack('I',mm[DMA_LENGTH:DMA_LENGTH+4])[0]
+                    # last_flit = struct.unpack('I',mm[rx_length-4:rx_length])[0]
+                    # last = last_flit == 0xffffffffffffffff
+                    # if not last:                                                                           
                         #print("rx_length is %d" % rx_length)
-                        recv+=mm[:rx_length]
-                else:
-                    last = True
-            else:                                                                                          
-                last = True                                                                                
-        return recv 
+                recv+=mm[:rx_length]
+                # else:
+                    # last = True
+            # else:                                                                                          
+                # last = True                                                                                
+        return recv
+
 def recv(trans, client):
     s1.acquire()
-    with open("flitout.bin","wb") as f:
-        flits = trans.recv_flit_bin()
-        f.write(flits)
-    client.sendall(flits)
+    for i in range(5):
+        with open("flitout.bin","wb") as f:
+            flits = trans.recv_flit_bin()
+            client.sendall(flits)
+            print("client send end")
+            f.write(flits)
+        # time.sleep(1)
+
     s1.release()
 
 def start_tcp_server(ip, port, id):
@@ -186,22 +188,12 @@ def start_tcp_server(ip, port, id):
                 if recv_len < 8:
                     client.close()
                     break
-                length = struct.unpack('I',msg[0:4])[0]
-                data_type = struct.unpack('I',msg[4:8])[0]
+                length = struct.unpack('Q',msg[0:8])[0]
                 recv_len -= 8
                 start = 8
                 print("length=%d" % length)
-                print("data_type=%08x" % data_type)
-                if data_type == CHIP_RESET:
-                    recv_len -= length * 4
-                    length = 0
-                    trans.close()
-                    os.system("/home/root/chip_reset")
-                    os.system("/home/root/restart_dma")
-                    trans.open()
-                #f.write(msg[8:])
                 if length > 0:
-                    thread = threading.Thread(target=recv, args=(trans,client,))
+                    thread = threading.Thread(target=recv, args=(trans,client))
                     thread.start()
             else:
                 pass
@@ -215,13 +207,13 @@ def start_tcp_server(ip, port, id):
             #if delta_time > 5:
                 #print("delta_time =%d" % delta_time)
 
-            if recv_len == length * 4 and length > 0:
+            if recv_len == length * 8 and length > 0:
                 #f.close()
                 etime = time.time_ns()                                              
                 print("speed is %.3f Mbps" % (8*recv_len*1000000000/(etime-stime)/2**20))
                 #print("waiting for respond")
 
-            if msg == 0 or recv_len == length * 4:
+            if msg == 0 or recv_len == length * 8:
                 s1.acquire()
                 s1.release()
                 client.close()

@@ -92,40 +92,37 @@ reg           config_soma_vld_dly;
 reg           config_soma_clear_dly;
 reg [NNW-1:0] config_soma_vm_addr_dly;
 
-`ifdef FPGA
-
-dp_ram #(
-    .RAM_WIDTH   (VW                  ),
-    .ADDR_WIDTH  (NNW                 )
-) vm_mem (
-    .write_clk   (clk_soma            ),
-    .read_clk    (clk_soma            ),
-    .write_allow (vm_we               ),
-    .read_allow  (vm_re               ),
-    .write_addr  (vm_waddr            ),
-    .read_addr   (vm_raddr            ),
-    .write_data  (vm_wdata            ),
-    .read_data   (config_soma_vm_rdata)
-);
-`endif 
 
 `ifdef ASIC
-S55DRAM_W32D4096 vm_mem(
-    QA    (  ),
-    QB    (config_soma_vm_rdata  ),
-	CLKA  (clk_soma ),
-	CLKB  (clk_soma ),
-	CENA  (1'b1),
-	CENB  (1'b1),
-	WENA  (vm_we),
-	WENB  (~vm_re),
-	AA    (vm_waddr),
-	AB    (vm_raddr),
-	DA    (vm_wdata  ),
-	DB    (  )
-);
-`endif 
-
+    S55DRAM_W32D4096 vm_mem(
+        QA    (  ),
+        QB    (config_soma_vm_rdata  ),
+        CLKA  (clk_soma ),
+        CLKB  (clk_soma ),
+        CENA  (1'b0),
+        CENB  (1'b0),
+        WENA  (~vm_we),
+        WENB  (vm_re),
+        AA    (vm_waddr),
+        AB    (vm_raddr),
+        DA    (vm_wdata  ),
+        DB    (  )
+    );
+`else
+    dp_ram #(
+        .RAM_WIDTH   (VW                  ),
+        .ADDR_WIDTH  (NNW                 )
+    ) vm_mem (
+        .write_clk   (clk_soma            ),
+        .read_clk    (clk_soma            ),
+        .write_allow (vm_we               ),
+        .read_allow  (vm_re               ),
+        .write_addr  (vm_waddr            ),
+        .read_addr   (vm_raddr            ),
+        .write_data  (vm_wdata            ),
+        .read_data   (config_soma_vm_rdata)
+    );
+`endif
 
 // v_mem write logic
 assign vm_we = config_soma_vm_we || axon_soma_we || config_soma_vld_dly;

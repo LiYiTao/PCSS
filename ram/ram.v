@@ -109,39 +109,37 @@ reg  [ADDR_WIDTH-1:0] depth;
 reg  [ADDR_WIDTH-1:0] rd_ptr;
 reg  [ADDR_WIDTH-1:0] wr_ptr;
 
-`ifdef FPGA
-fifo_ram #(
-    .DATA_WIDTH(DATA_WIDTH),
-    .ADDR_WIDTH(ADDR_WIDTH)
-)
-the_queue
-(
-    .clk(clk),
-    .wr_en(wr_en),
-    .rd_en(rd_en),
-    .wr_addr(wr_ptr),
-    .wr_data(din),
-    .rd_addr(rd_ptr),
-    .rd_data(dout)
-);
-`endif 
-
 `ifdef ASIC
-S55DRAM_W64D1042 the_queue(
-    QA    (  ),
-    QB    (dout  ),
-	CLKA  (clk ),
-	CLKB  (clk ),
-	CENA  (1'b1),
-	CENB  (1'b1),
-	WENA  (wr_en),
-	WENB  (~rd_en),
-	AA    (wr_ptr),
-	AB    (rd_ptr),
-	DA    (din  ),
-	DB    (  )
-);
-`endif 
+    S55DRAM_W64D1042 the_queue(
+        QA    (  ),
+        QB    (dout),
+        CLKA  (clk ),
+        CLKB  (clk ),
+        CENA  (1'b0),
+        CENB  (1'b0),
+        WENA  (~wr_en),
+        WENB  (rd_en),
+        AA    (wr_ptr),
+        AB    (rd_ptr),
+        DA    (din  ),
+        DB    (  )
+    );
+`else
+    fifo_ram #(
+        .DATA_WIDTH(DATA_WIDTH),
+        .ADDR_WIDTH(ADDR_WIDTH)
+    )
+    the_queue
+    (
+        .clk(clk),
+        .wr_en(wr_en),
+        .rd_en(rd_en),
+        .wr_addr(wr_ptr),
+        .wr_data(din),
+        .rd_addr(rd_ptr),
+        .rd_data(dout)
+    );
+`endif
 
 assign almost_full = depth >= {ADDR_WIDTH{1'b1}} - 1'b1;
 assign empty = depth == 0;
