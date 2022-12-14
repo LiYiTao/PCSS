@@ -1,6 +1,6 @@
 `timescale  1ns / 1ps
 `define debug
-// `define ASIC
+//`define ASIC
 //`define SAIF
 //`define VCD_DUMP
 
@@ -19,7 +19,7 @@ parameter NNW             = 9; // TODO neural number width
 parameter DATA_WIDTH      = 64;
 
 // localparam
-localparam CFG_LEN = 62;
+localparam CFG_LEN = 51;
 localparam SPK_LEN = 8;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
@@ -129,7 +129,7 @@ initial begin
         @(posedge clk);
     end
 
-    wait (tik_cnt == 5);
+    wait (tik_cnt == 4);
 
     `ifdef SAIF
         $toggle_stop;
@@ -280,6 +280,7 @@ begin
         S_AXIS_send_tdata = cfg_data[i];
         S_AXIS_send_tvalid = 1'b1;
     end
+    @(posedge clk);
     S_AXIS_send_tvalid = 1'b0;
 end
 endtask

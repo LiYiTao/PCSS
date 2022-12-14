@@ -80,31 +80,37 @@ class DMA_Transmitter(object):
         '''                                                                                                
         recv = bytearray()                                                                                       
         with mmap.mmap(self.rx_dma_fd,DMA_MAP_SIZE,mmap.MAP_SHARED,mmap.PROT_WRITE | mmap.PROT_READ) as mm:
-            # last = False                                                                                   
-            # while not last:                                                                                
+            
+            # mm[DMA_LENGTH:DMA_LENGTH+4]=DMA_RX_LEN
+            # fcntl.ioctl(self.rx_dma_fd, XFER, DMA_BINDEX)                                                                                                               
+            # rx_length = struct.unpack('I',mm[DMA_LENGTH:DMA_LENGTH+4])[0]
+            # recv+=mm[:rx_length]
+            
+            last = False                                                                                   
+            while not last:                                                                                
                 mm[DMA_LENGTH:DMA_LENGTH+4]=DMA_RX_LEN
                 fcntl.ioctl(self.rx_dma_fd, XFER, DMA_BINDEX)                                                                                                               
                 rx_length = struct.unpack('I',mm[DMA_LENGTH:DMA_LENGTH+4])[0]
-                    # last_flit = struct.unpack('I',mm[rx_length-4:rx_length])[0]
-                    # last = last_flit == 0xffffffffffffffff
-                    # if not last:                                                                           
-                        #print("rx_length is %d" % rx_length)
+                last_flit = struct.unpack('Q',mm[rx_length-8:rx_length])[0]
+                last = last_flit == 0xffffffffffffffff
+                if not last:                                                                           
+                    print("rx_length is %d" % rx_length)
                 recv+=mm[:rx_length]
-                # else:
-                    # last = True
-            # else:                                                                                          
-                # last = True                                                                                
+                                                                           
         return recv
 
 def recv(trans, client):
     s1.acquire()
-    for i in range(5):
-        with open("flitout.bin","wb") as f:
-            flits = trans.recv_flit_bin()
-            client.sendall(flits)
-            print("client send end")
-            f.write(flits)
-        # time.sleep(1)
+    # for i in range(2):
+    #     with open("flitout.bin","wb") as f:
+    #         flits = trans.recv_flit_bin()
+    #         client.sendall(flits)
+    #         print("client send end")
+    #         f.write(flits)
+
+    flits = trans.recv_flit_bin()
+    client.sendall(flits)
+    print("client send end")
 
     s1.release()
 
