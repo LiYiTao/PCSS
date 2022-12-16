@@ -199,6 +199,7 @@ localparam     S_SEND         = 2'd2;
 wire dst_mem_re;
 reg  [DST_DEPTH-1:0] dst_mem_raddr;
 wire [DST_WIDTH-1:0] dst_mem_rdata;
+reg  read_flag;
 wire dst_flag;
 wire router_available;
 
@@ -236,7 +237,7 @@ always @(*) begin
             end
         end
         S_SEND : begin
-            if(!dst_flag && spk_out_fifo_empty) begin
+            if((!dst_flag && spk_out_fifo_empty) || read_flag) begin
                 ns = S_IDLE;
             end
             else begin
@@ -262,6 +263,7 @@ always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         flit_out <= {FW{1'b0}};
         dst_mem_raddr <= {(DST_DEPTH){1'b0}};
+        read_flag <= 1'b0;
     end
     else begin
         case (cs)
@@ -272,6 +274,7 @@ always @(posedge clk or negedge rst_n) begin
                 if (ns != S_WAIT) begin
                     if (spk_out_pop_data[FW-1:FW-FTW] == READ) begin
                         flit_out <= spk_out_pop_data;
+                        read_flag <= 1'b1;
                     end
                     else begin
                         flit_out[FW-1:FW-FTW] <= spk_out_pop_data[FW-1:FW-FTW]; // type
@@ -285,6 +288,7 @@ always @(posedge clk or negedge rst_n) begin
                 if (!dst_flag) begin
                     dst_mem_raddr <= {(DST_DEPTH){1'b0}};
                 end
+                read_flag <= 1'b0;
             end
             default : begin
                 flit_out <= {FW{1'b0}};

@@ -19,7 +19,7 @@ parameter NNW             = 9; // TODO neural number width
 parameter DATA_WIDTH      = 64;
 
 // localparam
-localparam CFG_LEN = 51;
+localparam CFG_LEN = 5;//51
 localparam SPK_LEN = 8;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
@@ -109,7 +109,7 @@ end
 
 // open file
 initial begin
-    $readmemh("D:/config.txt",cfg_data);
+    $readmemh("D:/read.txt",cfg_data);
     // $readmemh("D:/spike.txt",spk_data);
 end
 
