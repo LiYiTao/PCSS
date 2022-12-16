@@ -21,7 +21,12 @@ module pcss_top #(
     parameter DST_DEPTH = 4 // dst node depth
 ) (
     // System Sginals
+`ifdef FPGA
+    input  clk_p,
+    input  clk_n,
+`else
     input  clk,
+`endif
     input  rst_n,
     // ctrl
     input  tik,
@@ -274,5 +279,23 @@ assign send_data_valid_S = send_data_valid[3];
 assign send_data_par_S = send_data_par[3];
 assign send_data_ready[3] = send_data_ready_S;
 assign send_data_err[3] = send_data_err_S;
+
+`ifdef FPGA
+    wire clk_in;
+    IBUFDS IBUFDS_inst (
+        .O(clk_in),   // 1-bit output: Buffer output
+        .I(clk_p),   // 1-bit input: Diff_p buffer input (connect directly to top-level port)
+        .IB(clk_n)  // 1-bit input: Diff_n buffer input (connect directly to top-level port)
+    );
+
+    clk_wiz_0 clk_inst
+    (
+        // Clock out ports
+        .clk_out1(clk),     // output clk_out1
+        // Status and control signals
+        .resetn(rst_n), // input resetn
+        // Clock in ports
+        .clk_in1(clk_in));      // input clk_in1
+`endif
 
 endmodule
