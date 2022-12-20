@@ -78,7 +78,7 @@ def run_pcss(tc="", pre="", recv = True, ip = "10.11.8.238"): # 10.11.8.238
     trans.connect_lwip(ip_address)
     print("===<2>=== tcp connect succeed")
     start_time = time.time_ns()
-    res=trans.send_flit(tc+pre+"config.txt") #TODO send file
+    res=trans.send_flit(tc+pre+"read.txt") #TODO send file
     if res == 0:
         return
     end_time = time.time_ns()

@@ -200,6 +200,7 @@ wire dst_mem_re;
 reg  [DST_DEPTH-1:0] dst_mem_raddr;
 wire [DST_WIDTH-1:0] dst_mem_rdata;
 reg  read_flag;
+reg  dst_hold;
 wire dst_flag;
 wire router_available;
 
@@ -252,10 +253,10 @@ end
 
 //generate output
 assign spk_out_pop = ((cs == S_IDLE) && (ns == S_WAIT)) || 
-                     ((cs == S_SEND) && (!dst_flag && !spk_out_fifo_empty));
+                     ((cs == S_SEND) && (!dst_flag && !spk_out_fifo_empty) && (!read_flag));
 
 assign dst_mem_re  = (cs != S_WAIT) && (ns == S_WAIT);
-assign dst_flag = dst_mem_rdata[0];
+assign dst_flag = dst_hold ? dst_mem_rdata[0] : 1'b0;
 assign config_spk_out_dst_rdata = dst_mem_rdata;
 assign flit_out_wr = (cs == S_SEND);
 
@@ -280,8 +281,8 @@ always @(posedge clk or negedge rst_n) begin
                         flit_out[FW-1:FW-FTW] <= spk_out_pop_data[FW-1:FW-FTW]; // type
                         flit_out[FW-FTW-1:R_FLG] <= dst_mem_rdata; // dst
                         flit_out[R_FLG-1:0] <= spk_out_pop_data[R_FLG-1:0]; // data
+                        dst_mem_raddr <= dst_mem_raddr + 1'b1;
                     end
-                    dst_mem_raddr <= dst_mem_raddr + 1'b1;
                 end
             end
             S_SEND : begin
@@ -295,6 +296,15 @@ always @(posedge clk or negedge rst_n) begin
                 dst_mem_raddr <= {(DST_DEPTH){1'b0}};
             end
         endcase
+    end
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        dst_hold <= 1'b0;
+    end
+    else if (config_spk_out_dst_we) begin
+        dst_hold <= 1'b1;
     end
 end
 
