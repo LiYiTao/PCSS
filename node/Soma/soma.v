@@ -83,6 +83,7 @@ input  [SW-1:0]             axon_soma_wdata      ;
 
 wire          vm_we;
 wire          vm_re;
+reg           vm_re_dly;
 reg [NNW-1:0] vm_waddr;
 reg [NNW-1:0] vm_raddr;
 reg [VW-1:0 ] vm_wdata;
@@ -162,11 +163,13 @@ always @(posedge clk_soma or negedge rst_n)
         config_soma_vld_dly <= 0; 
         config_soma_clear_dly <= 0;
         config_soma_vm_addr_dly <= 0;
+        vm_re_dly <= 0;
     end
     else begin
         config_soma_vld_dly <= config_soma_vld;
         config_soma_clear_dly <= config_soma_clear;
         config_soma_vm_addr_dly <= config_soma_vm_addr;
+        vm_re_dly <= vm_re;
     end
 
 wire [VW-1:0] V_rand;
@@ -244,8 +247,8 @@ always @*
 //MUX3 compare value select
 always @*
     case(config_soma_code)
-        2'b00: VM_out = config_soma_vm_rdata + sd_soma_vm;
-        2'b01: VM_out = config_soma_vm_rdata;
+        2'b00: VM_out = vm_re_dly ? (config_soma_vm_rdata + sd_soma_vm) : 0;
+        2'b01: VM_out = vm_re_dly ? config_soma_vm_rdata : 0;
         2'b10: VM_out = VM_P;
         2'b11: VM_out = 0;
     endcase
