@@ -3,6 +3,7 @@
 //`define ASIC
 //`define SAIF
 //`define VCD_DUMP
+`define FSDB_DUMP
 
 module tb_inf_top;
 
@@ -19,7 +20,7 @@ parameter NNW             = 9; // TODO neural number width
 parameter DATA_WIDTH      = 64;
 
 // localparam
-localparam CFG_LEN = 5;//51
+localparam CFG_LEN = 51;//51
 localparam SPK_LEN = 8;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
@@ -109,7 +110,7 @@ end
 
 // open file
 initial begin
-    $readmemh("D:/read.txt",cfg_data);
+    $readmemh("D:/config.txt",cfg_data);
     // $readmemh("D:/spike.txt",spk_data);
 end
 
@@ -129,7 +130,7 @@ initial begin
         @(posedge clk);
     end
 
-    wait (tik_cnt == 4);
+    wait (tik_cnt == 3);
 
     `ifdef SAIF
         $toggle_stop;

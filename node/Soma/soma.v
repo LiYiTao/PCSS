@@ -254,7 +254,7 @@ always @*
     endcase
 
 always @* begin
-    if(VM_out >= VM_t) begin
+    if((VM_out >= VM_t) && vm_re_dly) begin
         soma_spk_out_fire = 1'b1;
     end
     else

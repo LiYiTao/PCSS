@@ -2,10 +2,11 @@ import numpy as np
 import math
 import pickle
 
+global debug
+
 class Node():
-    def __init__(self, tik=0):
+    def __init__(self):
         # packet par
-        self.tik = tik
         self.connect = 0
         self.pclass = 0b110 # write
         # node location
@@ -147,7 +148,7 @@ class Configuration(object):
         f=open(filename,'w')
         
         for node in self.node_list:
-            flit_head = (node.tik << 64) + (node.connect << 59) + (node.pclass << 56) \
+            flit_head = (node.connect << 59) + (node.pclass << 56) \
                 + (node.dst_y << 52) + (node.dst_x << 48) + (node.dst_r2 << 42) + (node.dst_r1 << 36)
             # write reg bank
             '''
@@ -156,7 +157,7 @@ class Configuration(object):
             addr : 0x1
             '''
             waddr = 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.neu_num)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.neu_num)
             f.write(ss+'\n')
             '''
             nm_status:
@@ -171,18 +172,18 @@ class Configuration(object):
             node.clear = 1
             waddr = 0
             tmp = (node.reset << 4) + (node.spike_code << 2) + (node.clear << 1) + node.enable
-            ss = "%018x" % (flit_head + (waddr << 21) + tmp)
+            ss = "%016x" % (flit_head + (waddr << 21) + tmp)
             f.write(ss+'\n')
             '''
             nm_vth: [19:0]
             nm_leak: [19:0]
             '''
             waddr = 2
-            ss = "%018x" % (flit_head + (waddr << 21) + node.vth)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.vth)
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.leak)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.leak)
             f.write(ss+'\n')
             '''
             x_in : [7:0] 0x4
@@ -194,73 +195,73 @@ class Configuration(object):
             y_out : [7:0] 0xa
             '''
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.x_in)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.x_in)
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.y_in)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.y_in)
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.z_out)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.z_out)
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.x_k)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.x_k)
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.y_k)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.y_k)
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.x_out)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.x_out)
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.y_out)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.y_out)
             f.write(ss+'\n')
 
             '''
             pad : valid
             '''
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.pad)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.pad)
             f.write(ss+'\n')
             '''
             stride_log : 0,1,2,3,4
             stride : 1,2,4,8,16
             '''
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.stride_log)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.stride_log)
             f.write(ss+'\n')
             '''
             xk_yk
             addr : 0xd
             '''
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.x_k*node.y_k)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.x_k*node.y_k)
             f.write(ss+'\n')
             '''
             rand_seed
             addr : 0xe
             '''
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.rand_seed)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.rand_seed)
             f.write(ss+'\n')
             '''
             x_start
             addr : 0xf
             '''
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.x_start)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.x_start)
             f.write(ss+'\n')
             '''
             y_start
             addr : 0xf
             '''
             waddr += 1
-            ss = "%018x" % (flit_head + (waddr << 21) + node.y_start)
+            ss = "%016x" % (flit_head + (waddr << 21) + node.y_start)
             f.write(ss+'\n')
 
             # write wgt mem
@@ -269,7 +270,7 @@ class Configuration(object):
             '''
             waddr = 0x1000
             for wgt in node.wgt_mem:
-                        ss = "%018x" % (flit_head + (waddr << 21) + int(wgt))
+                        ss = "%016x" % (flit_head + (waddr << 21) + int(wgt))
                         f.write(ss+'\n')
                         waddr += 1
 
@@ -279,7 +280,7 @@ class Configuration(object):
             '''
             waddr = 0x2000
             for dst in node.dst_mem:
-                ss = "%018x" % (flit_head + (waddr << 21) + int(dst))
+                ss = "%016x" % (flit_head + (waddr << 21) + int(dst))
                 f.write(ss+'\n')
                 waddr += 1
 
@@ -288,16 +289,15 @@ class Configuration(object):
             node.clear = 0
             waddr = 0
             tmp = (node.reset << 4) + (node.spike_code << 2) + (node.clear << 1) + node.enable
-            ss = "%018x" % (flit_head + (waddr << 21) + tmp)
+            ss = "%016x" % (flit_head + (waddr << 21) + tmp)
             f.write(ss+'\n')
 
         f.close()
         print('config done')
 
 class Input_Node():
-    def __init__(self, tik=0):
+    def __init__(self):
         # packet par
-        self.tik = tik
         self.connect = 0
         self.pclass = 0b001 # Data
         # node location
@@ -342,110 +342,187 @@ class Input_Node():
 
     def gen_input(self,filename="config.txt",feature_map=[]):
         f=open(filename,'a')
+        # debug
+        if debug:
+            ss = "====input===="
+            f.write(ss+'\n')
 
         # unenable
         self.pclass = 0b110 # write
-        flit_head = (self.tik << 64) + (self.connect << 59) + (self.pclass << 56) \
+        flit_head = (self.connect << 59) + (self.pclass << 56) \
                     + (self.dst_y << 52) + (self.dst_x << 48) + (self.dst_r2 << 42) + (self.dst_r1 << 36)
         enable = 0
         clear = 0
         waddr = 0
         tmp = (self.reset << 4) + (self.spike_code << 2) + (clear << 1) + enable
-        ss = "%018x" % (flit_head + (waddr << 21) + tmp)
+        ss = "%016x" % (flit_head + (waddr << 21) + tmp)
         f.write(ss+'\n')
 
         # send data
         self.pclass = 0b001 # data
-        flit_head = (self.tik << 64) + (self.connect << 59) + (self.pclass << 56) \
+        flit_head = (self.connect << 59) + (self.pclass << 56) \
                     + (self.dst_y << 52) + (self.dst_x << 48) + (self.dst_r2 << 42) + (self.dst_r1 << 36)
         for i,y in enumerate(feature_map) :
             for j,x in enumerate(y):
                 if i == len(feature_map)-1 and j == len(y)-1:
                     self.pclass = 0b010 # data_end
-                    flit_head = (self.tik << 64) + (self.connect << 59) + (self.pclass << 56) \
+                    flit_head = (self.connect << 59) + (self.pclass << 56) \
                         + (self.dst_y << 52) + (self.dst_x << 48) + (self.dst_r2 << 42) + (self.dst_r1 << 36)
 
                 flit_data = x # TODO
-                ss = "%018x" % (flit_head + flit_data)
+                ss = "%016x" % (flit_head + flit_data)
                 f.write(ss+'\n')
     
         
         # enable
         self.pclass = 0b110 # write
-        flit_head = (self.tik << 64) + (self.connect << 59) + (self.pclass << 56) \
+        flit_head = (self.connect << 59) + (self.pclass << 56) \
                     + (self.dst_y << 52) + (self.dst_x << 48) + (self.dst_r2 << 42) + (self.dst_r1 << 36)
         enable = 1
         clear = 0
         waddr = 0
         tmp = (self.reset << 4) + (self.spike_code << 2) + (clear << 1) + enable
-        ss = "%018x" % (flit_head + (waddr << 21) + tmp)
+        ss = "%016x" % (flit_head + (waddr << 21) + tmp)
         f.write(ss+'\n')
 
         f.close()
         print('spike done')
-        
-#---------------------
-#       node
-#---------------------
-tik = 0
-# neu par
-reset = 1
-vth = 2 # TODO
-leak = 1 # TODO
-# node
-node_list = []
 
-# read weight
-with open('mnist_weight.pickle', 'rb') as f:
-    mnist_wgt = pickle.load(f)
+class Tik():
+    def __init__(self, tik_num=0, tik_len=4096):
+        # tik par
+        self.tik_num = tik_num
+        self.tik_len = tik_len
+        self.pclass = 0b011 # tik
 
-# spike coding node
-neu_num = 28*28
-node_tmp = Node(tik=tik)
-node_tmp.set_pclass(package_class='write')
-node_tmp.set_node_loc(node_x=0,node_y=0,node_number=0)
-node_tmp.set_neu_par(spike_code='Count',reset=reset,vth=vth,leak=leak)
-node_tmp.set_neu_num(neu_num=neu_num)
-node_tmp.set_dst_mem(dst_node_x=1,dst_node_y=0,dst_node_number=10)
-node_list.append(node_tmp)
+    def gen_input(self,filename="config.txt"):
+        f=open(filename,'a')
 
-# conv1 node
-node_num = 10
-neu_num = 12*12
-for n in range(0, node_num):
-    node_tmp = Node(tik=tik)
-    node_tmp.set_pclass(package_class='write')
-    node_tmp.set_node_loc(node_x=1,node_y=0,node_number=n)
-    node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
-    node_tmp.set_neu_num(neu_num=neu_num)
-    node_tmp.set_conv(xin=28,yin=28,xout=12,yout=12,zout=n,xk=5,yk=5,pad=0,stride=2)
-    node_tmp.set_wgt_mem(weight_list=mnist_wgt[0][n])
-    node_tmp.set_dst_mem(dst_node_x=1,dst_node_y=1,dst_node_number=20)
-    node_list.append(node_tmp)
+        # gen tik
+        self.pclass = 0b011 # tik
+        for i in range(self.tik_num):
+            ss = "%016x" % ((self.pclass << 56) + self.tik_len)
+            f.write(ss+'\n')
 
-# conv2 node
-node_num = 20
-neu_num = 10*10
-for n in range(0, node_num):
-    node_tmp = Node(tik=tik)
-    node_tmp.set_pclass(package_class='write')
-    node_tmp.set_node_loc(node_x=1,node_y=1,node_number=n)
-    node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
-    node_tmp.set_neu_num(neu_num=neu_num)
-    node_tmp.set_conv(xin=12,yin=12,xout=10,yout=10,zout=n,xk=3,yk=3,pad=0,stride=1)
-    node_tmp.set_wgt_mem(weight_list=mnist_wgt[1][n])
-    node_tmp.set_dst_mem(dst_node_x=2,dst_node_y=1,dst_node_number=1)
-    node_list.append(node_tmp)
+        # gen tik end
+        ss = "%016x" % ((self.pclass << 56) + (1 << 32) + self.tik_len)
+        f.write(ss+'\n')
 
-# gen config
-conf = Configuration(node_list=node_list)
-conf.gen_conf()
+        f.close()
+        print('tik done')
 
-#---------------------
-#       gen spk
-#---------------------
-mnist_fm = [[3 for i in range(28)] for j in range(28)]
-fm = Input_Node(tik=tik)
-fm.set_node_loc(node_x=0,node_y=0,node_number=0) # to (0,0,0)
-fm.set_neu_par(spike_code='Count',reset=reset)
-fm.gen_input(feature_map=mnist_fm)
+if __name__ == "__main__":
+    debug = False    
+    #---------------------
+    #       node
+    #---------------------
+    tik_num = 3
+    tik_len = 4096 # 32 bit
+    # neu par
+    reset = 1
+    vth = 2 # TODO
+    leak = 1 # TODO
+    # node
+    node_list = []
+
+    # read weight
+    with open('track_weight.pkl', 'rb') as f:
+        track_wgt = pickle.load(f)
+
+    # spike coding node
+    for x in range(2):
+        for y in range(2):
+            if x == 1:
+                if y == 1:
+                    neu_num = 63*63
+                else :
+                    neu_num = 63*64
+            else :
+                if y == 1:
+                    neu_num = 64*63
+                else :
+                    neu_num = 64*64
+            
+            node_number = y*2 + x
+            node_tmp = Node()
+            node_tmp.set_pclass(package_class='write')
+            node_tmp.set_node_loc(node_x=1,node_y=0,node_number=node_number)
+            node_tmp.set_neu_par(spike_code='Count',reset=reset,vth=vth,leak=leak)
+            node_tmp.set_neu_num(neu_num=neu_num)
+            node_tmp.set_conv(xin=0,yin=0,xstart=64*x,ystart=64*y,xout=127,yout=127,zout=0,xk=0,yk=0,pad=0,stride=4) #TODO
+            node_tmp.set_dst_mem(dst_node_x=0,dst_node_y=0,dst_node_number=8)
+            node_list.append(node_tmp)
+
+    # conv1 node
+    node_num = 8
+    neu_num = 32*32
+    for n in range(0, node_num):
+        node_tmp = Node()
+        node_tmp.set_pclass(package_class='write')
+        node_tmp.set_node_loc(node_x=0,node_y=0,node_number=n)
+        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
+        node_tmp.set_neu_num(neu_num=neu_num)
+        node_tmp.set_conv(xin=127,yin=127,xstart=0,ystart=0,xout=32,yout=32,zout=n,xk=3,yk=3,pad=0,stride=4) #TODO
+        node_tmp.set_wgt_mem(weight_list=track_wgt[0][n])
+        node_tmp.set_dst_mem(dst_node_x=0,dst_node_y=1,dst_node_number=16)
+        node_list.append(node_tmp)
+
+    # conv2 node
+    node_num = 16
+    neu_num = 15*15
+    for n in range(0, node_num):
+        node_tmp = Node()
+        node_tmp.set_pclass(package_class='write')
+        node_tmp.set_node_loc(node_x=0,node_y=1,node_number=n)
+        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
+        node_tmp.set_neu_num(neu_num=neu_num)
+        node_tmp.set_conv(xin=32,yin=32,xstart=0,ystart=0,xout=15,yout=15,zout=n,xk=3,yk=3,pad=0,stride=2)
+        node_tmp.set_wgt_mem(weight_list=track_wgt[1][n])
+        node_tmp.set_dst_mem(dst_node_x=1,dst_node_y=1,dst_node_number=8)
+        node_list.append(node_tmp)
+
+    # conv3 node
+    node_num = 8
+    neu_num = 31*31
+    for n in range(0, node_num):
+        node_tmp = Node()
+        node_tmp.set_pclass(package_class='write')
+        node_tmp.set_node_loc(node_x=1,node_y=1,node_number=n)
+        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
+        node_tmp.set_neu_num(neu_num=neu_num)
+        node_tmp.set_conv(xin=15,yin=15,xstart=0,ystart=0,xout=13,yout=13,zout=n,xk=3,yk=3,pad=0,stride=1)
+        node_tmp.set_wgt_mem(weight_list=track_wgt[1][n])
+        node_tmp.set_dst_mem(dst_node_x=2,dst_node_y=1,dst_node_number=1)
+        node_list.append(node_tmp)
+
+    # gen config
+    conf = Configuration(node_list=node_list)
+    conf.gen_conf()
+
+    #---------------------
+    #       gen spk
+    #---------------------
+    with open('track_fm.pkl', 'rb') as f:
+        track_fm = pickle.load(f)
+
+    # track_fm = [[3 for i in range(127)] for j in range(127)]
+
+    for x in range(2):
+        for y in range(2):
+            if x == 1:
+                dx = 63
+            else :
+                dx = 64
+            if y == 1:
+                dy = 63
+            else :
+                dy = 64
+            node_number = y*2 + x
+            node_tmp = Input_Node()
+            node_tmp.set_node_loc(node_x=1,node_y=0,node_number=node_number)
+            node_tmp.set_neu_par(spike_code='Count',reset=reset)
+            fm = [track_fm[i][64*y : 64*y+dy] for i in range(64*x, 64*x+dx)]
+            node_tmp.gen_input(filename="config.txt",feature_map=fm)
+            
+    tik_send = Tik(tik_num=tik_num,tik_len=tik_len)
+    tik_send.gen_input(filename="config.txt")
