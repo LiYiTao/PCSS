@@ -3,7 +3,7 @@
 //`define ASIC
 //`define SAIF
 //`define VCD_DUMP
-`define FSDB_DUMP
+// `define FSDB_DUMP
 
 module tb_inf_top;
 
@@ -20,7 +20,7 @@ parameter NNW             = 9; // TODO neural number width
 parameter DATA_WIDTH      = 64;
 
 // localparam
-localparam CFG_LEN = 51;//51
+localparam CFG_LEN = 18625;//51
 localparam SPK_LEN = 8;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
@@ -257,6 +257,7 @@ initial begin
 `endif
 
 `ifdef FSDB_DUMP
+    wait(tik == 1);
     $display("fsdb dump...");
     $fsdbDumpfile("pcss.fsdb");
     $fsdbDumpvars(); // 0,tb_xor_top.x_darwin_top
@@ -277,7 +278,10 @@ begin
     for (i=0; i<CFG_LEN; i=i+1) begin
         wait (S_AXIS_send_tready == 1'b1);
         @(posedge clk);
-        $display ("Send Data:%h,",cfg_data[i]);
+        if ((i%1000)==0) begin
+            $display ("Send Data:%d",i);
+        end
+        // $display ("Send Data:%h,",cfg_data[i]);
         S_AXIS_send_tdata = cfg_data[i];
         S_AXIS_send_tvalid = 1'b1;
     end
