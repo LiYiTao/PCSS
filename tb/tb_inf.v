@@ -3,7 +3,7 @@
 //`define ASIC
 //`define SAIF
 //`define VCD_DUMP
-// `define FSDB_DUMP
+`define FSDB_DUMP
 
 module tb_inf_top;
 
