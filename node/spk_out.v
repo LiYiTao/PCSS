@@ -198,6 +198,7 @@ localparam     S_SEND         = 2'd2;
 
 wire dst_mem_re;
 reg  [DST_DEPTH-1:0] dst_mem_raddr;
+reg  [DST_DEPTH-1:0] dst_mem_raddr_dst_mask;
 wire [DST_WIDTH-1:0] dst_mem_rdata;
 reg  read_flag;
 reg  dst_hold;
@@ -299,6 +300,20 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
+always @( *) begin
+    if (cs == S_SEND) begin
+        if (!dst_flag) begin
+            dst_mem_raddr_dst_mask = {(DST_DEPTH){1'b0}};
+        end
+        else begin
+            dst_mem_raddr_dst_mask = dst_mem_raddr;
+        end
+    end
+    else begin
+        dst_mem_raddr_dst_mask = dst_mem_raddr;
+    end
+end
+
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         dst_hold <= 1'b0;
@@ -320,7 +335,7 @@ dst_mem
     .rd_en((dst_mem_re || config_spk_out_dst_re)),
     .wr_data(config_spk_out_dst_wdata),
     .wr_addr(config_spk_out_dst_waddr),
-    .rd_addr((dst_mem_re ? dst_mem_raddr : config_spk_out_dst_raddr)),
+    .rd_addr((dst_mem_re ? dst_mem_raddr_dst_mask : config_spk_out_dst_raddr)),
     .rd_data(dst_mem_rdata)
 );
 

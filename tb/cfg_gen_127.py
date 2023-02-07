@@ -136,7 +136,7 @@ class Node():
             dst_mem_r1 += 1 << node_num%6
 
         flg = 0 # not continue
-        tmp = (dst_mem_y << 16) + (dst_mem_x << 12) + (dst_mem_r2 << 6) + dst_mem_r1
+        tmp = (dst_mem_y << 17) + (dst_mem_x << 13) + (dst_mem_r2 << 7) + (dst_mem_r1 << 1) + flg
         self.dst_mem.append(tmp)
 
 class Configuration(object):
