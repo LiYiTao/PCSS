@@ -16,7 +16,7 @@ parameter CONNECT_WIDTH   = 5 ;
 parameter P_MESH          = 5 ;
 parameter P_HIER          = 7 ;
 parameter CHIPDATA_WIDTH  = 16;
-parameter NNW             = 9; // TODO neural number width
+parameter NNW             = 12; // TODO neural number width
 parameter DATA_WIDTH      = 64;
 
 // localparam
