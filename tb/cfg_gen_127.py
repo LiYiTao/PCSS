@@ -129,12 +129,19 @@ class Node():
         else : 
             dst_mem_y = (1 << 3) + self.node_y - dst_node_y
 
-        dst_mem_r2 = 0
-        dst_mem_r1 = 0
-        for node_num in range(0,dst_node_number):
-            dst_mem_r2 += 1 << node_num//6 # [0,5]
-            dst_mem_r1 += 1 << node_num%6
 
+        if dst_node_number//6 > 0:
+            for i in range(0, dst_node_number//6):
+                dst_mem_r2 = 1 << i
+                dst_mem_r1 = 63 #06'b111111
+                flg = 1 # continue
+                tmp = (dst_mem_y << 17) + (dst_mem_x << 13) + (dst_mem_r2 << 7) + (dst_mem_r1 << 1) + flg
+                self.dst_mem.append(tmp)
+
+        dst_mem_r2 = 1 << (dst_node_number//6)
+        dst_mem_r1 = 0
+        for i in range(0,dst_node_number%6):
+            dst_mem_r1 += 1 << i
         flg = 0 # not continue
         tmp = (dst_mem_y << 17) + (dst_mem_x << 13) + (dst_mem_r2 << 7) + (dst_mem_r1 << 1) + flg
         self.dst_mem.append(tmp)
