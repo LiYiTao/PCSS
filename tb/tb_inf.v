@@ -130,7 +130,7 @@ initial begin
         @(posedge clk);
     end
 
-    wait (tik_cnt == 3);
+    wait (M_AXIS_recv_tdata == {DATA_WIDTH{1'b1}});
 
     `ifdef SAIF
         $toggle_stop;
@@ -276,16 +276,26 @@ begin
     wait(rst_n == 1'b1);
     #100
     for (i=0; i<CFG_LEN; i=i+1) begin
-        wait (S_AXIS_send_tready == 1'b1);
         @(posedge clk);
+        #1
         if ((i%1000)==0) begin
             $display ("Send Data:%d",i);
         end
         // $display ("Send Data:%h,",cfg_data[i]);
-        S_AXIS_send_tdata = cfg_data[i];
-        S_AXIS_send_tvalid = 1'b1;
+        if (S_AXIS_send_tready == 1'b1) begin
+            S_AXIS_send_tdata = cfg_data[i];
+            S_AXIS_send_tvalid = 1'b1;
+        end
+        else begin
+            S_AXIS_send_tvalid = 1'b0;
+            wait(S_AXIS_send_tready == 1'b1);
+            #1
+            S_AXIS_send_tdata = cfg_data[i];
+            S_AXIS_send_tvalid = 1'b1;
+        end
     end
     @(posedge clk);
+    #1
     S_AXIS_send_tvalid = 1'b0;
 end
 endtask

@@ -418,10 +418,10 @@ if __name__ == "__main__":
     #---------------------
     tik_num = 3
     tik_len = 4096 # 32 bit
-    # neu par
+    # spk node par
     reset = 1
-    vth = 2 # TODO
-    leak = 1 # TODO
+    vth = 50 # TODO
+    leak = 20 # TODO
     # node
     node_list = []
 
@@ -452,6 +452,10 @@ if __name__ == "__main__":
             node_tmp.set_conv(xin=0,yin=0,xstart=64*x,ystart=64*y,xout=127,yout=127,zout=0,xk=0,yk=0,pad=0,stride=4) #TODO
             node_tmp.set_dst_mem(dst_node_x=0,dst_node_y=0,dst_node_number=8)
             node_list.append(node_tmp)
+
+    # node par
+    vth = 1 # TODO
+    leak = 0 # TODO
 
     # conv1 node
     node_num = 8
