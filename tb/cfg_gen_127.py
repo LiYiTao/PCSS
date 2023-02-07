@@ -64,7 +64,7 @@ class Node():
         self.node_x = node_x
         self.node_y = node_y
         # input config data
-        self.dst_x = (1 << 3) + (2 - node_x) # -(2-x)
+        self.dst_x = (1 << 3) + (1 - node_x) # -(1-x)
         self.dst_y = 0b000
         self.dst_r2 = 1 << node_number//6 # [0,5]
         self.dst_r1 = 1 << node_number%6
@@ -316,7 +316,7 @@ class Input_Node():
         self.node_x = node_x
         self.node_y = node_y
         # input config data
-        self.dst_x = (1 << 3) + (2 - node_x) # -(2-x)
+        self.dst_x = (1 << 3) + (1 - node_x) # -(1-x)
         self.dst_y = 0b000
         self.dst_r2 = 1 << node_number//6 # [0,5]
         self.dst_r1 = 1 << node_number%6
