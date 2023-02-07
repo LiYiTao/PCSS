@@ -110,7 +110,7 @@ end
 
 // open file
 initial begin
-    $readmemh("D:/config.txt",cfg_data);
+    $readmemh("../PCSS/config.txt",cfg_data);
     // $readmemh("D:/spike.txt",spk_data);
 end
 
@@ -257,7 +257,7 @@ initial begin
 `endif
 
 `ifdef FSDB_DUMP
-    wait(tik == 1);
+    // wait(tik == 1);
     $display("fsdb dump...");
     $fsdbDumpfile("pcss.fsdb");
     $fsdbDumpvars(); // 0,tb_xor_top.x_darwin_top
