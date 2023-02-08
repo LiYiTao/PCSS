@@ -40,8 +40,8 @@ module work_ctrl #(
     output config_clear_done,
     input  [CODE_WIDTH-1:0] spike_code,
     input  [NNW-1:0] neu_num,
-    input  [NNW-1:0] x_in,
-    input  [NNW-1:0] y_in,
+    input  [NNW-1:0] x_out,
+    input  [NNW-1:0] y_out,
     input  [SW/3-1:0] x_start,
     input  [SW/3-1:0] y_start,
     input  [SW/3-1:0] z_out
@@ -201,14 +201,14 @@ always @(posedge clk or negedge rst_n) begin
              (((cs == CODE_P) || (cs == P_WAIT)) && (ns == CODE_P)) ||
              ((cs == CLEAR) && (ns == CLEAR))) begin
         neu_id <= neu_id + 1'b1;
-        if (x_s < x_in[SW/3-1:0]) begin // [x_in-1 : 0]
+        if (x_s < x_out[SW/3-1:0]) begin // [x_out-1 : 0]
             x_s <= x_s + 1'b1;
         end
-        else if (y_s < y_in[SW/3-1:0]) begin // [y_in-1 : 0]
+        else if (y_s < y_out[SW/3-1:0]) begin // [y_out-1 : 0]
             x_s <= {(SW/3){1'b0}};
             y_s <= y_s + 1'b1;
         end
-        else begin // (x_s >= x_in) && (y_s >= y_in)
+        else begin // (x_s >= x_out) && (y_s >= y_out)
             x_s <= {(SW/3){1'b0}};
             y_s <= {(SW/3){1'b0}};
         end

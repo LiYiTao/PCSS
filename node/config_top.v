@@ -183,8 +183,8 @@ the_work_ctrl
     .config_clear_done(config_clear_done),
     .spike_code(spike_code),
     .neu_num(neu_num),
-    .x_in(config_axon_x_in),
-    .y_in(config_axon_y_in),
+    .x_out(config_axon_x_out),
+    .y_out(config_axon_y_out),
     .x_start(config_work_x_start),
     .y_start(config_work_y_start),
     .z_out(config_work_z_out)
