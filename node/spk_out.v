@@ -280,7 +280,7 @@ always @(posedge clk or negedge rst_n) begin
                     end
                     else begin
                         flit_out[FW-1:FW-FTW] <= spk_out_pop_data[FW-1:FW-FTW]; // type
-                        flit_out[FW-FTW-1:R_FLG] <= dst_mem_rdata[DST_WIDTH-1:0]; // dst
+                        flit_out[FW-FTW-1:R_FLG] <= dst_mem_rdata[DST_WIDTH-1:1]; // dst
                         flit_out[R_FLG-1:0] <= spk_out_pop_data[R_FLG-1:0]; // data
                         dst_mem_raddr <= dst_mem_raddr + 1'b1;
                     end
