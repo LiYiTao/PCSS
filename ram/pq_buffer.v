@@ -86,8 +86,8 @@ wire [DATA_WIDTH-1:0] din_b2 ;
 wire [DATA_WIDTH-1:0] dout_b1;
 wire [DATA_WIDTH-1:0] dout_b2;
 
-assign din_b1 = bunit_sl  ? din1 : din2;
-assign din_b2 = !bunit_sl ? din1 : din2;
+assign din_b1 = (clear | bunit_sl)  ? din1 : din2;
+assign din_b2 = (clear | !bunit_sl) ? din1 : din2;
 
 `ifdef ASIC
     S55DRAM_W32D4096 bunit1(
