@@ -274,12 +274,13 @@ class Configuration(object):
             # write wgt mem
             '''
             0x1000 ~ 0x1FFF
+            width : 16bit
             '''
             waddr = 0x1000
             for wgt in node.wgt_mem:
-                        ss = "%016x" % (flit_head + (waddr << 21) + int(wgt))
-                        f.write(ss+'\n')
-                        waddr += 1
+                ss = "%016x" % (flit_head + (waddr << 21) + (int(wgt) & 0xffff))
+                f.write(ss+'\n')
+                waddr += 1
 
             # write dst mem
             '''
