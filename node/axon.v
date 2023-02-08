@@ -55,6 +55,10 @@ reg  [NNW-1:0] y_pre;
 wire [NNW-1:0] stride;
 reg  [NNW-1:0] x_pre_stride;
 reg  [NNW-1:0] y_pre_stride;
+wire [NNW-1:0] xs_stride;
+wire [NNW-1:0] ys_stride;
+reg  xs_ignore;
+reg  ys_ignore;
 
 // FSM
 localparam IDLE     = 2'b00;
@@ -87,7 +91,7 @@ always @(*) begin
     case(cs)
         IDLE : begin
             if (spk_in_axon_vld) begin
-                if (spk_in_axon_type == SPIKE) ns = SLIDE;
+                if ((spk_in_axon_type == SPIKE) && (!xs_ignore) && (!ys_ignore)) ns = SLIDE;
                 else if (spk_in_axon_type == DATA) ns = INPUT;
                 else ns = IDLE;
             end
@@ -213,7 +217,20 @@ always @( *) begin
     else begin
         xl_end = (x_in + pad + pad - x_k) >> stride_log;
     end
+    // stride > x_k
+    xs_ignore = 0;
+    if (stride > x_k) begin
+        if (xs_stride < x_k) begin
+            xl_start = xs >> stride_log;
+            xl_end = xs >> stride_log;
+            xw_start = xs_stride;
+        end
+        else begin
+            xs_ignore = 1;
+        end
+    end
 end
+assign xs_stride = ((xs + pad) << (NNW-stride_log)) >> (NNW-stride_log); // xs mod stride
 
 always @( *) begin
     // y start
@@ -234,6 +251,19 @@ always @( *) begin
     else begin
         yl_end = (y_in + pad + pad - y_k) >> stride_log;
     end
+    // stride > y_k
+    ys_ignore = 0;
+    if (stride > y_k) begin
+        if (ys_stride < y_k) begin
+            yl_start = ys >> stride_log;
+            yl_end = ys >> stride_log;
+            yw_start = ys_stride;
+        end
+        else begin
+            ys_ignore = 1;
+        end
+    end
 end
+assign ys_stride = ((ys + pad) << (NNW-stride_log)) >> (NNW-stride_log); // ys mod stride
     
 endmodule
