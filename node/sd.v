@@ -167,7 +167,7 @@ end
 always @(*) begin
     if (axon_sd_vld_dly) begin
         vm_waddr = axon_sd_vm_addr_dly;
-        vm_wdata = config_sd_vm_rdata + config_sd_wgt_rdata;
+        vm_wdata = config_sd_vm_rdata + {{(VW-WW){config_sd_wgt_rdata[WW-1]}}, config_sd_wgt_rdata[WW-1:0]};
     end
     else begin
         vm_waddr = config_sd_vm_waddr;
