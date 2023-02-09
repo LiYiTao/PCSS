@@ -208,6 +208,7 @@ Poisson_code #(
 wire signed [VW:0] V_reset;
 reg [VW-1:0] VM_t;
 reg [VW-1:0] VM_out;
+wire VM_ge;
 
 assign {n,k} = config_soma_vm_rdata;
 //MUX1 VM Select
@@ -217,7 +218,7 @@ always @*
             if(soma_spk_out_fire)
                 VM_temp = V_reset;
             else
-                VM_temp = config_soma_vm_rdata + sd_soma_vm - config_soma_leak;
+                VM_temp = config_soma_vm_rdata + sd_soma_vm + ~config_soma_leak + 1'b1; //  - config_soma_leak
         end
         2'b01: begin // count
             VM_temp = config_soma_vm_rdata - config_soma_leak;
@@ -233,7 +234,7 @@ always @*
         end
     endcase
 
-assign V_reset = config_soma_reset ? (VM_out - config_soma_vth) : 0; // TODO
+assign V_reset = config_soma_reset ? (VM_out + ~config_soma_vth + 1'b1) : 0; // - config_soma_vth
 
 //MUX2 threshold value select
 always @*
@@ -254,11 +255,42 @@ always @*
     endcase
 
 always @* begin
-    if((VM_out >= VM_t) && vm_re_dly) begin
+    if(VM_ge && vm_re_dly) begin // two's complement large and equal
         soma_spk_out_fire = 1'b1;
     end
     else
         soma_spk_out_fire = 1'b0;
+end
+
+cmp_ge #(
+    .WIDTH(VW)
+)
+the_cmp_ge
+(
+    .a(VM_out),
+    .b(VM_t),
+    .ge(VM_ge)
+);
+
+endmodule
+
+module cmp_ge
+#(
+    parameter WIDTH = 20
+)
+(
+    input [WIDTH-1:0] a, // two's complement
+    input [WIDTH-1:0] b, // two's complement
+    output reg ge // a >= b
+);
+
+always @(*) begin
+    if (a[WIDTH-1] == b[WIDTH-1]) begin
+        ge = a[WIDTH-2:0] >= b[WIDTH-2:0];
+    end
+    else begin
+        ge = b[WIDTH-1];
+    end
 end
 
 endmodule
