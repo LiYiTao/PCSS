@@ -428,8 +428,8 @@ if __name__ == "__main__":
     tik_len = 32768 # 32 bit
     # spk node par
     reset = 1
-    vth = 50 # TODO
-    leak = 20 # TODO
+    vth = 100 # TODO
+    leak = 50 # TODO
     # node
     node_list = []
 
