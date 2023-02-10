@@ -541,7 +541,7 @@ if __name__ == "__main__":
             node_tmp = Input_Node()
             node_tmp.set_node_loc(node_x=1,node_y=0,node_number=node_number)
             node_tmp.set_neu_par(spike_code='Count',reset=reset)
-            fm = [track_fm[i][64*y : 64*y+dy] for i in range(64*x, 64*x+dx)]
+            fm = [track_fm[i][64*x : 64*x+dx] for i in range(64*y, 64*y+dy)]
             node_tmp.gen_input(filename="config.txt",feature_map=fm)
             
     tik_send = Tik(tik_num=tik_num,tik_len=tik_len)
