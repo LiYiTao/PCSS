@@ -24,6 +24,8 @@ module axon #(
     input  [NNW-1:0] y_in,
     input  [NNW-1:0] y_out,
     input  [NNW-1:0] y_k,
+    input  [SW/3-1:0] x_start,
+    input  [SW/3-1:0] y_start,
     input  [NNW-1:0] pad,
     input  [NNW-1:0] stride_log,
     // soma
@@ -196,7 +198,7 @@ assign ys = spk_in_axon_data[SW/3*2-1:SW/3];
 assign zs = spk_in_axon_data[SW-1:SW/3*2];
 assign stride = 1'b1 << stride_log;
 assign axon_sd_wgt_addr = yw * x_k + xw + zw * xk_yk; // TODO
-assign axon_sd_vm_addr = yl * x_out + xl;
+assign axon_sd_vm_addr = (yl - {{(NNW-SW/3){1'b0}},y_start}) * x_out + (xl - {{(NNW-SW/3){1'b0}},x_start});
 
 always @( *) begin
     // x start

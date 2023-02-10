@@ -443,13 +443,21 @@ if __name__ == "__main__":
             if x == 1:
                 if y == 1:
                     neu_num = 63*63
+                    xout = 63
+                    yout = 63
                 else :
                     neu_num = 63*64
+                    xout = 63
+                    yout = 64
             else :
                 if y == 1:
                     neu_num = 64*63
+                    xout = 64
+                    yout = 63
                 else :
                     neu_num = 64*64
+                    xout = 64
+                    yout = 64
             
             node_number = y*2 + x
             node_tmp = Node()
@@ -457,7 +465,7 @@ if __name__ == "__main__":
             node_tmp.set_node_loc(node_x=1,node_y=0,node_number=node_number)
             node_tmp.set_neu_par(spike_code='Count',reset=reset,vth=vth,leak=leak)
             node_tmp.set_neu_num(neu_num=neu_num)
-            node_tmp.set_conv(xin=0,yin=0,xstart=64*x,ystart=64*y,xout=127,yout=127,zout=0,xk=0,yk=0,pad=0,stride=4) #TODO
+            node_tmp.set_conv(xin=0,yin=0,xstart=64*x,ystart=64*y,xout=xout,yout=yout,zout=0,xk=0,yk=0,pad=0,stride=4) #TODO
             node_tmp.set_dst_mem(dst_node_x=0,dst_node_y=0,dst_node_number=8)
             node_list.append(node_tmp)
 

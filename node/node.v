@@ -72,6 +72,8 @@ wire [NNW-1:0]        config_axon_x_k;
 wire [NNW-1:0]        config_axon_y_in;
 wire [NNW-1:0]        config_axon_y_out;
 wire [NNW-1:0]        config_axon_y_k;
+wire [SW/3-1:0]       config_axon_x_start;
+wire [SW/3-1:0]       config_axon_y_start;
 wire [NNW-1:0]        config_axon_pad;
 wire [NNW-1:0]        config_axon_stride_log;
 wire [NNW-1:0]        config_sd_vm_addr;
@@ -195,6 +197,8 @@ the_axon
     .y_in(config_axon_y_in),
     .y_out(config_axon_y_out),
     .y_k(config_axon_y_k),
+    .x_start(config_axon_x_start),
+    .y_start(config_axon_y_start),
     .pad(config_axon_pad),
     .stride_log(config_axon_stride_log),
     // soma
@@ -334,6 +338,8 @@ the_config_top
     .config_axon_y_k(config_axon_y_k),
     .config_axon_pad(config_axon_pad),
     .config_axon_stride_log(config_axon_stride_log),
+    .config_axon_x_start(config_axon_x_start),
+    .config_axon_y_start(config_axon_y_start),
     // S & D
     .config_sd_vm_addr(config_sd_vm_addr),
     .config_sd_vld(config_sd_vld),

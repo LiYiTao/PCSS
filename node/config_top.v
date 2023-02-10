@@ -44,6 +44,8 @@ module config_top #(
     output [NNW-1:0] config_axon_y_k,
     output [NNW-1:0] config_axon_pad,
     output [NNW-1:0] config_axon_stride_log,
+    output [SW/3-1:0] config_axon_x_start,
+    output [SW/3-1:0] config_axon_y_start,
     // SD
     output [NNW-1:0] config_sd_vm_addr,
     output config_sd_vld,
@@ -112,6 +114,8 @@ wire [SW/3-1:0] config_work_y_start;
 // generate output
 assign config_soma_code = spike_code;
 assign config_soma_enable = config_enable;
+assign config_axon_x_start = config_work_x_start;
+assign config_axon_y_start = config_work_y_start;
 
 // config ctrl
 config_ctrl #(
