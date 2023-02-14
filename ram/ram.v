@@ -142,7 +142,7 @@ reg  [ADDR_WIDTH-1:0] wr_ptr;
     );
 `endif
 
-assign almost_full = depth >= {ADDR_WIDTH{1'b1}} - 1'b1;
+assign almost_full = depth >= {ADDR_WIDTH{1'b1}} - 2'b10;
 assign empty = depth == 0;
 
 always @(posedge clk or negedge rst_n) begin
