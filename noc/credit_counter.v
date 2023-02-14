@@ -45,7 +45,7 @@ generate
             end
         end
 
-        `ifdef debug
+        `ifdef DEBUG
 
             always @(posedge clk) begin
                 if (rst_n) begin

@@ -1,3 +1,4 @@
+`define debug
 module fifo_ram #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 8
