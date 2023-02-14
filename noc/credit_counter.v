@@ -31,7 +31,7 @@ generate
     for (i=0; i<P; i=i+1) begin
         
         assign decrease[i] = |grant_outport_all[(i+1)*P-1:i*P];
-        assign outport_available_all[i] = credit_counter_reg[i] > 0;
+        assign outport_available_all[i] = credit_counter_reg[i] > 1'b1;
 
         always @(posedge clk or negedge rst_n) begin
             if (!rst_n) begin
