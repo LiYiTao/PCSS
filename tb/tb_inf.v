@@ -1,5 +1,5 @@
 `timescale  1ns / 1ps
-`define DEBUG
+`define debug
 //`define ASIC
 //`define SAIF
 //`define VCD_DUMP
