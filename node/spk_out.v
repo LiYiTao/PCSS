@@ -364,10 +364,10 @@ end
 
     always @(posedge clk) begin
         if (rst_n) begin
-            if ((credit_counter_reg == {B{1'b0}}) && ~increase[i] && decrease) begin
+            if ((credit_counter_reg == {B{1'b0}}) && ~increase && decrease) begin
                 $display("%t: ERROR: Attempt to send flit to full ni: %m",$time);
             end
-            if ((credit_counter_reg == {B{1'b1}}) && increase[i] && ~decrease) begin
+            if ((credit_counter_reg == {B{1'b1}}) && increase && ~decrease) begin
                 $display("%t: ERROR: unexpected credit recived for empty ni: %m",$time);
             end
         end
