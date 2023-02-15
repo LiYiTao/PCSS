@@ -186,11 +186,11 @@ class Configuration(object):
             nm_leak: [19:0]
             '''
             waddr = 2
-            ss = "%016x" % (flit_head + (waddr << 21) + node.vth)
+            ss = "%016x" % (flit_head + (waddr << 21) + (int(node.vth) & 0xfffff))
             f.write(ss+'\n')
 
             waddr += 1
-            ss = "%016x" % (flit_head + (waddr << 21) + node.leak)
+            ss = "%016x" % (flit_head + (waddr << 21) + (int(node.leak) & 0xfffff))
             f.write(ss+'\n')
             '''
             x_in : [7:0] 0x4
@@ -438,10 +438,10 @@ if __name__ == "__main__":
         track_wgt = pickle.load(f)
 
     # spike coding node
-    for x in range(2):
-        for y in range(2):
-            if x == 1:
-                if y == 1:
+    for x in range(4):
+        for y in range(4):
+            if x == 3:
+                if y == 3:
                     neu_num = 63*63
                     xout = 63
                     yout = 63
@@ -450,7 +450,7 @@ if __name__ == "__main__":
                     xout = 63
                     yout = 64
             else :
-                if y == 1:
+                if y == 3:
                     neu_num = 64*63
                     xout = 64
                     yout = 63
@@ -459,7 +459,7 @@ if __name__ == "__main__":
                     xout = 64
                     yout = 64
             
-            node_number = y*2 + x
+            node_number = y*4 + x
             node_tmp = Node()
             node_tmp.set_pclass(package_class='write')
             node_tmp.set_node_loc(node_x=1,node_y=0,node_number=node_number)
@@ -470,47 +470,55 @@ if __name__ == "__main__":
             node_list.append(node_tmp)
 
     # node par
-    vth = 1 # TODO
+    vth = -1 # TODO
     leak = 0 # TODO
 
     # conv1 node
     node_num = 8
-    neu_num = 32*32
+    neu_num = 64*64
     for n in range(0, node_num):
         node_tmp = Node()
         node_tmp.set_pclass(package_class='write')
         node_tmp.set_node_loc(node_x=0,node_y=0,node_number=n)
         node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
         node_tmp.set_neu_num(neu_num=neu_num)
-        node_tmp.set_conv(xin=127,yin=127,xstart=0,ystart=0,xout=32,yout=32,zout=n,xk=3,yk=3,pad=0,stride=4) #TODO
+        node_tmp.set_conv(xin=255,yin=255,xstart=0,ystart=0,xout=64,yout=64,zout=n,xk=3,yk=3,pad=0,stride=4) #TODO
         node_tmp.set_wgt_mem(weight_list=track_wgt[0][n])
         node_tmp.set_dst_mem(dst_node_x=0,dst_node_y=1,dst_node_number=16)
         node_list.append(node_tmp)
 
+    # node par
+    vth = -2 # TODO
+    leak = 0 # TODO
+
     # conv2 node
     node_num = 16
-    neu_num = 15*15
+    neu_num = 31*31
     for n in range(0, node_num):
         node_tmp = Node()
         node_tmp.set_pclass(package_class='write')
         node_tmp.set_node_loc(node_x=0,node_y=1,node_number=n)
         node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
         node_tmp.set_neu_num(neu_num=neu_num)
-        node_tmp.set_conv(xin=32,yin=32,xstart=0,ystart=0,xout=15,yout=15,zout=n,xk=3,yk=3,pad=0,stride=2)
+        node_tmp.set_conv(xin=64,yin=64,xstart=0,ystart=0,xout=31,yout=31,zout=n,xk=3,yk=3,pad=0,stride=2)
         node_tmp.set_wgt_mem(weight_list=track_wgt[1][n])
         node_tmp.set_dst_mem(dst_node_x=1,dst_node_y=1,dst_node_number=8)
         node_list.append(node_tmp)
 
+    # node par
+    vth = -3 # TODO
+    leak = 0 # TODO
+
     # conv3 node
     node_num = 8
-    neu_num = 13*13
+    neu_num = 29*29
     for n in range(0, node_num):
         node_tmp = Node()
         node_tmp.set_pclass(package_class='write')
         node_tmp.set_node_loc(node_x=1,node_y=1,node_number=n)
         node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
         node_tmp.set_neu_num(neu_num=neu_num)
-        node_tmp.set_conv(xin=15,yin=15,xstart=0,ystart=0,xout=13,yout=13,zout=n,xk=3,yk=3,pad=0,stride=1)
+        node_tmp.set_conv(xin=31,yin=31,xstart=0,ystart=0,xout=29,yout=29,zout=n,xk=3,yk=3,pad=0,stride=1)
         node_tmp.set_wgt_mem(weight_list=track_wgt[1][n])
         node_tmp.set_dst_mem(dst_node_x=2,dst_node_y=1,dst_node_number=1)
         node_list.append(node_tmp)
@@ -522,22 +530,22 @@ if __name__ == "__main__":
     #---------------------
     #       gen spk
     #---------------------
-    with open('track_fm.pkl', 'rb') as f:
+    with open('track_fm_255.pkl', 'rb') as f:
         track_fm = pickle.load(f)
 
     # track_fm = [[3 for i in range(127)] for j in range(127)]
 
-    for x in range(2):
-        for y in range(2):
-            if x == 1:
+    for x in range(4):
+        for y in range(4):
+            if x == 3:
                 dx = 63
             else :
                 dx = 64
-            if y == 1:
+            if y == 3:
                 dy = 63
             else :
                 dy = 64
-            node_number = y*2 + x
+            node_number = y*4 + x
             node_tmp = Input_Node()
             node_tmp.set_node_loc(node_x=1,node_y=0,node_number=node_number)
             node_tmp.set_neu_par(spike_code='Count',reset=reset)
