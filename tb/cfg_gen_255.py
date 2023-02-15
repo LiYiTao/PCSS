@@ -470,7 +470,7 @@ if __name__ == "__main__":
             node_list.append(node_tmp)
 
     # node par
-    vth = -1 # TODO
+    vth = 1 # TODO
     leak = 0 # TODO
 
     # conv1 node
@@ -488,7 +488,7 @@ if __name__ == "__main__":
         node_list.append(node_tmp)
 
     # node par
-    vth = -1 # TODO
+    vth = 1 # TODO
     leak = 0 # TODO
 
     # conv2 node
