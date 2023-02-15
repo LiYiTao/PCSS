@@ -425,7 +425,7 @@ if __name__ == "__main__":
     #       node
     #---------------------
     tik_num = 3
-    tik_len = 65536 # 32 bit
+    tik_len = 131072 # 32 bit
     # spk node par
     reset = 1
     vth = 100 # TODO
@@ -488,7 +488,7 @@ if __name__ == "__main__":
         node_list.append(node_tmp)
 
     # node par
-    vth = -2 # TODO
+    vth = -1 # TODO
     leak = 0 # TODO
 
     # conv2 node
@@ -506,7 +506,7 @@ if __name__ == "__main__":
         node_list.append(node_tmp)
 
     # node par
-    vth = -3 # TODO
+    vth = 1 # TODO
     leak = 0 # TODO
 
     # conv3 node

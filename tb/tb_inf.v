@@ -257,7 +257,7 @@ initial begin
 `endif
 
 `ifdef FSDB_DUMP
-    // wait(tik == 1);
+    wait(tik == 1);
     $display("fsdb dump...");
     $fsdbDumpfile("pcss.fsdb");
     $fsdbDumpvars(); // 0,tb_xor_top.x_darwin_top
