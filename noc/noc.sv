@@ -157,31 +157,31 @@ generate
             end
 
             if (y < NY-1) begin : not_last_y
-                assign mesh_flit_in_wr_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = mesh_flit_out_wr_all [`ROUTER2_SELECT_WIRE(x,(y+1),N,1)];
-                assign mesh_flit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,FW)] = mesh_flit_out_all [`ROUTER2_SELECT_WIRE(x,(y+1),N,FW)];
-                assign mesh_credit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = mesh_credit_out_all [`ROUTER2_SELECT_WIRE(x,(y+1),N,1)];
+                assign mesh_flit_in_wr_all [`ROUTER2_SELECT_WIRE(x,y,N,1)] = mesh_flit_out_wr_all [`ROUTER2_SELECT_WIRE(x,(y+1),S,1)];
+                assign mesh_flit_in_all [`ROUTER2_SELECT_WIRE(x,y,N,FW)] = mesh_flit_out_all [`ROUTER2_SELECT_WIRE(x,(y+1),S,FW)];
+                assign mesh_credit_in_all [`ROUTER2_SELECT_WIRE(x,y,N,1)] = mesh_credit_out_all [`ROUTER2_SELECT_WIRE(x,(y+1),S,1)];
             end
             else begin : last_y
-                assign mesh_flit_in_wr_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = flit_in_wr [`CONNECT_SELECT_WIRE(x,S,1)];
-                assign mesh_flit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,FW)] = flit_in [`CONNECT_SELECT_WIRE(x,S,FW)];
-                assign mesh_credit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = credit_in [`CONNECT_SELECT_WIRE(x,S,1)];
-                assign flit_out_wr [`CONNECT_SELECT_WIRE(x,S,1)] = mesh_flit_out_wr_all [`ROUTER2_SELECT_WIRE(x,y,S,1)];
-                assign flit_out [`CONNECT_SELECT_WIRE(x,S,FW)] = mesh_flit_out_all [`ROUTER2_SELECT_WIRE(x,y,S,FW)];
-                assign credit_out [`CONNECT_SELECT_WIRE(x,S,1)] = mesh_credit_out_all [`ROUTER2_SELECT_WIRE(x,y,S,1)];
-            end
-            
-            if (y > 0) begin : not_first_y
-                assign mesh_flit_in_wr_all [`ROUTER2_SELECT_WIRE(x,y,N,1)] = mesh_flit_out_wr_all [`ROUTER2_SELECT_WIRE(x,(y-1),S,1)];
-                assign mesh_flit_in_all [`ROUTER2_SELECT_WIRE(x,y,N,FW)] = mesh_flit_out_all [`ROUTER2_SELECT_WIRE(x,(y-1),S,FW)];
-                assign mesh_credit_in_all [`ROUTER2_SELECT_WIRE(x,y,N,1)] = mesh_credit_out_all [`ROUTER2_SELECT_WIRE(x,(y-1),S,1)];
-            end
-            else begin : first_y
                 assign mesh_flit_in_wr_all [`ROUTER2_SELECT_WIRE(x,y,N,1)] = flit_in_wr [`CONNECT_SELECT_WIRE(x,N,1)];
                 assign mesh_flit_in_all [`ROUTER2_SELECT_WIRE(x,y,N,FW)] = flit_in [`CONNECT_SELECT_WIRE(x,N,FW)];
                 assign mesh_credit_in_all [`ROUTER2_SELECT_WIRE(x,y,N,1)] = credit_in [`CONNECT_SELECT_WIRE(x,N,1)];
                 assign flit_out_wr [`CONNECT_SELECT_WIRE(x,N,1)] = mesh_flit_out_wr_all [`ROUTER2_SELECT_WIRE(x,y,N,1)];
                 assign flit_out [`CONNECT_SELECT_WIRE(x,N,FW)] = mesh_flit_out_all [`ROUTER2_SELECT_WIRE(x,y,N,FW)];
                 assign credit_out [`CONNECT_SELECT_WIRE(x,N,1)] = mesh_credit_out_all [`ROUTER2_SELECT_WIRE(x,y,N,1)];
+            end
+            
+            if (y > 0) begin : not_first_y
+                assign mesh_flit_in_wr_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = mesh_flit_out_wr_all [`ROUTER2_SELECT_WIRE(x,(y-1),N,1)];
+                assign mesh_flit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,FW)] = mesh_flit_out_all [`ROUTER2_SELECT_WIRE(x,(y-1),N,FW)];
+                assign mesh_credit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = mesh_credit_out_all [`ROUTER2_SELECT_WIRE(x,(y-1),N,1)];
+            end
+            else begin : first_y
+                assign mesh_flit_in_wr_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = flit_in_wr [`CONNECT_SELECT_WIRE(x,S,1)];
+                assign mesh_flit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,FW)] = flit_in [`CONNECT_SELECT_WIRE(x,S,FW)];
+                assign mesh_credit_in_all [`ROUTER2_SELECT_WIRE(x,y,S,1)] = credit_in [`CONNECT_SELECT_WIRE(x,S,1)];
+                assign flit_out_wr [`CONNECT_SELECT_WIRE(x,S,1)] = mesh_flit_out_wr_all [`ROUTER2_SELECT_WIRE(x,y,S,1)];
+                assign flit_out [`CONNECT_SELECT_WIRE(x,S,FW)] = mesh_flit_out_all [`ROUTER2_SELECT_WIRE(x,y,S,FW)];
+                assign credit_out [`CONNECT_SELECT_WIRE(x,S,1)] = mesh_credit_out_all [`ROUTER2_SELECT_WIRE(x,y,S,1)];
             end
 
             // router_hier2

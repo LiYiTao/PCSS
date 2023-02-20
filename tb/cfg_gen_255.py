@@ -519,7 +519,7 @@ if __name__ == "__main__":
         node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
         node_tmp.set_neu_num(neu_num=neu_num)
         node_tmp.set_conv(xin=31,yin=31,xstart=0,ystart=0,xout=29,yout=29,zout=n,xk=3,yk=3,pad=0,stride=1)
-        node_tmp.set_wgt_mem(weight_list=track_wgt[1][n])
+        node_tmp.set_wgt_mem(weight_list=track_wgt[2][n])
         node_tmp.set_dst_mem(dst_node_x=2,dst_node_y=1,dst_node_number=1)
         node_list.append(node_tmp)
 
