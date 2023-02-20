@@ -41,7 +41,7 @@ generate
                 end
                 else if (!delta_y[YW-1]) begin // delta_y > 0
                     dest_port = N;
-                    delta_y_next = delta_y + 1'b1;
+                    delta_y_next = delta_y - 1'b1;
                 end
                 else begin
                     dest_port = S;
@@ -51,7 +51,7 @@ generate
             else begin
                 if (!delta_x[XW-1]) begin // delta_x > 0
                     dest_port = E;
-                    delta_x_next = delta_x + 1'b1;
+                    delta_x_next = delta_x - 1'b1;
                 end
                 else begin
                     dest_port = W;
