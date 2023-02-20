@@ -204,9 +204,10 @@ always @( *) begin
     // x start
     if (xs + pad >= x_k - 1'b1) begin
         x_pre = xs + pad - x_k + 1'b1;
-        xl_start = x_pre >> stride_log;
         x_pre_stride = (x_pre << (NNW-stride_log)) >> (NNW-stride_log); // mod
         xw_start = x_k - 1'b1 - x_pre_stride;
+        if (x_pre_stride == 0) xl_start = x_pre >> stride_log;
+        else xl_start = (x_pre >> stride_log) + 1'b1;
     end
     else begin
         x_pre = 0;
@@ -240,9 +241,10 @@ always @( *) begin
     // y start
     if (ys + pad >= y_k - 1'b1) begin
         y_pre = ys + pad - y_k + 1'b1;
-        yl_start = y_pre >> stride_log;
         y_pre_stride = (y_pre << (NNW-stride_log)) >> (NNW-stride_log); // mod
         yw_start = y_k - 1'b1 - y_pre_stride;
+        if (y_pre_stride == 0) yl_start = y_pre >> stride_log;
+        else yl_start = (y_pre >> stride_log) + 1'b1;
     end
     else begin
         y_pre = 0;
