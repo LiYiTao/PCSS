@@ -20,7 +20,7 @@ parameter NNW             = 12; // TODO neural number width
 parameter DATA_WIDTH      = 64;
 
 // localparam
-localparam CFG_LEN = 68397; //68399;
+localparam CFG_LEN = 68402; //68399;
 localparam SPK_LEN = 8;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
