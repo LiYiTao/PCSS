@@ -428,14 +428,18 @@ if __name__ == "__main__":
     tik_len = 131072 # 32 bit
     # spk node par
     reset = 1
-    vth = 150 # TODO
-    leak = 50 # TODO
+    vth = 0 # TODO
+    leak = 255 # TODO
     # node
     node_list = []
 
     # read weight
     with open('track_weight.pkl', 'rb') as f:
         track_wgt = pickle.load(f)
+
+    # read vth
+    with open('track_vth.pkl', 'rb') as f:
+        track_vth = pickle.load(f)
 
     # spike coding node
     for x in range(4):
@@ -470,8 +474,8 @@ if __name__ == "__main__":
             node_list.append(node_tmp)
 
     # node par
-    vth = 1 # TODO
-    leak = 0 # TODO
+    vth = track_vth[0]
+    leak = 0
 
     # conv1 node
     node_num = 8
@@ -480,7 +484,7 @@ if __name__ == "__main__":
         node_tmp = Node()
         node_tmp.set_pclass(package_class='write')
         node_tmp.set_node_loc(node_x=0,node_y=0,node_number=n)
-        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
+        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth[n],leak=leak)
         node_tmp.set_neu_num(neu_num=neu_num)
         node_tmp.set_conv(xin=255,yin=255,xstart=0,ystart=0,xout=64,yout=64,zout=n,xk=3,yk=3,pad=0,stride=4) #TODO
         node_tmp.set_wgt_mem(weight_list=track_wgt[0][n])
@@ -488,8 +492,8 @@ if __name__ == "__main__":
         node_list.append(node_tmp)
 
     # node par
-    vth = 1 # TODO
-    leak = 0 # TODO
+    vth = track_vth[1]
+    leak = 0
 
     # conv2 node
     node_num = 16
@@ -498,7 +502,7 @@ if __name__ == "__main__":
         node_tmp = Node()
         node_tmp.set_pclass(package_class='write')
         node_tmp.set_node_loc(node_x=0,node_y=1,node_number=n)
-        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
+        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth[n],leak=leak)
         node_tmp.set_neu_num(neu_num=neu_num)
         node_tmp.set_conv(xin=64,yin=64,xstart=0,ystart=0,xout=31,yout=31,zout=n,xk=3,yk=3,pad=0,stride=2)
         node_tmp.set_wgt_mem(weight_list=track_wgt[1][n])
@@ -506,8 +510,8 @@ if __name__ == "__main__":
         node_list.append(node_tmp)
 
     # node par
-    vth = 1 # TODO
-    leak = 0 # TODO
+    vth = track_vth[2]
+    leak = 0
 
     # conv3 node
     node_num = 8
@@ -516,7 +520,7 @@ if __name__ == "__main__":
         node_tmp = Node()
         node_tmp.set_pclass(package_class='write')
         node_tmp.set_node_loc(node_x=1,node_y=1,node_number=n)
-        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth,leak=leak)
+        node_tmp.set_neu_par(spike_code='LIF',reset=reset,vth=vth[n],leak=leak)
         node_tmp.set_neu_num(neu_num=neu_num)
         node_tmp.set_conv(xin=31,yin=31,xstart=0,ystart=0,xout=29,yout=29,zout=n,xk=3,yk=3,pad=0,stride=1)
         node_tmp.set_wgt_mem(weight_list=track_wgt[2][n])
