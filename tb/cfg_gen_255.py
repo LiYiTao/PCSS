@@ -424,7 +424,7 @@ if __name__ == "__main__":
     #---------------------
     #       node
     #---------------------
-    tik_num = 3
+    tik_num = 8
     tik_len = 1048576 # 32 bit
     # spk node par
     reset = 1
