@@ -377,7 +377,7 @@ class Input_Node():
                     flit_head = (self.connect << 59) + (self.pclass << 56) \
                         + (self.dst_y << 52) + (self.dst_x << 48) + (self.dst_r2 << 42) + (self.dst_r1 << 36)
 
-                flit_data = x # TODO
+                flit_data = (int(x) & 0xffff) # 16bit
                 ss = "%016x" % (flit_head + flit_data)
                 f.write(ss+'\n')
     
