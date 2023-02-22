@@ -114,14 +114,14 @@ always @(*) begin
             end
         end
         INFERENCE : begin
-            if (spk_out_config_full) begin
+            if (neu_id >= neu_num) begin
+                ns = IDLE;
+            end
+            else if (spk_out_config_full) begin
                 ns = I_WAIT;
             end
-            else if (neu_id < neu_num) begin
-                ns = INFERENCE;
-            end
             else begin
-                ns = IDLE;
+                ns = INFERENCE;
             end
         end
         I_WAIT : begin
@@ -133,14 +133,14 @@ always @(*) begin
             end
         end
         CODE_C : begin
-            if (spk_out_config_full) begin
+            if (neu_id >= neu_num) begin
+                ns = IDLE;
+            end
+            else if (spk_out_config_full) begin
                 ns = C_WAIT;
             end
-            else if (neu_id < neu_num) begin
-                ns = CODE_C;
-            end
             else begin
-                ns = IDLE;
+                ns = CODE_C;
             end
         end
         C_WAIT : begin
@@ -152,14 +152,14 @@ always @(*) begin
             end
         end
         CODE_P : begin
-            if (spk_out_config_full) begin
+            if (neu_id >= neu_num) begin
+                ns = IDLE;
+            end
+            else if (spk_out_config_full) begin
                 ns = P_WAIT;
             end
-            else if (neu_id < neu_num) begin
-                ns = CODE_P;
-            end
             else begin
-                ns = IDLE;
+                ns = CODE_P;
             end
         end
         P_WAIT : begin
