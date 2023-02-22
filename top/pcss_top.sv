@@ -13,7 +13,7 @@ module pcss_top #(
     parameter CAW = 15, // config addres width
     parameter NNW = 12, // TODO neural number width
     parameter WW = 16, // weight width
-    parameter WD = 6, // weight depth (8x8)
+    parameter WD = 8, // weight depth (8x8)
     parameter VW = 20, // Vm width
     parameter SW = 24, // spk width, (x,y,z)
     parameter CODE_WIDTH = 2, // spike code width
