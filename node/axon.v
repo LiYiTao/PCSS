@@ -223,7 +223,8 @@ always @( *) begin
         xl_end = (x_in + pad + pad - x_k) >> stride_log;
     end
     // stride > x_k
-    xs_ignore = 0;
+    if (xl_start > xl_end) xs_ignore = 1;
+    else xs_ignore = 0;
     if (stride > x_k) begin
         if (xs_stride < x_k) begin
             xl_start = xs >> stride_log;
@@ -260,7 +261,8 @@ always @( *) begin
         yl_end = (y_in + pad + pad - y_k) >> stride_log;
     end
     // stride > y_k
-    ys_ignore = 0;
+    if (yl_start > yl_end) ys_ignore = 1;
+    else ys_ignore = 0;
     if (stride > y_k) begin
         if (ys_stride < y_k) begin
             yl_start = ys >> stride_log;
