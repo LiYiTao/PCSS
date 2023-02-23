@@ -87,7 +87,7 @@ class DMA_Transmitter(object):
             # recv+=mm[:rx_length]
             
             last = False                                                                                   
-            while not last:                                                                                
+            while not last:
                 mm[DMA_LENGTH:DMA_LENGTH+4]=DMA_RX_LEN
                 fcntl.ioctl(self.rx_dma_fd, XFER, DMA_BINDEX)                                                                                                               
                 rx_length = struct.unpack('I',mm[DMA_LENGTH:DMA_LENGTH+4])[0]
