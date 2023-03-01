@@ -2,6 +2,7 @@ import os
 import socket
 import time
 import struct
+import sys
 
 class Transmitter(object):
     def __init__(self):
@@ -67,18 +68,18 @@ class Transmitter(object):
                 print("%s" % reply)
         return 1    
 
-def run_pcss(tc="", pre="", recv = True, ip = "10.11.8.238"): # 10.11.8.238
+def run_pcss(tc="", pre="", recv = True, ip = "10.11.8.238", port=1): # 10.11.8.238
     if tc != "" :
         if os.path.exists(tc):
             tc  = tc+"\\"
         else:
             tc = ""
     trans = Transmitter()
-    ip_address = (ip,1) #TODO port
+    ip_address = (ip, port) #TODO port
     trans.connect_lwip(ip_address)
     print("===<2>=== tcp connect succeed")
     start_time = time.time_ns()
-    res=trans.send_flit(tc+pre+"read.txt") #TODO send file
+    res=trans.send_flit(tc+pre+"config.txt") #TODO send file
     if res == 0:
         return
     end_time = time.time_ns()
@@ -113,7 +114,10 @@ def run_pcss(tc="", pre="", recv = True, ip = "10.11.8.238"): # 10.11.8.238
     print('===<2>=== tcp recv elapsed : %.3f ms with %d flits' % ((end_time - start_time)/1000000,tot))
 
 if __name__ == "__main__":
+    id = 0
+    if len(sys.argv)>1:
+        id = int(sys.argv[1])
     stime = time.time_ns()
-    run_pcss("D:")
+    run_pcss("D:", port=id)
     etime = time.time_ns()
     print("\n<--total time elapsed : %.3f ms-->\n" % ((etime - stime)/1000000.0))

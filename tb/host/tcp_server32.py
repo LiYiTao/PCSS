@@ -54,7 +54,26 @@ class DMA_Transmitter(object):
     def close(self):                                                       
         os.close(self.tx_dma_fd)                                           
         os.close(self.rx_dma_fd)                                           
-                                                                           
+
+    #===== time out =====
+    # def callback_func(self):
+    #     print("dma timeout")
+    
+    # def time_out(interval, callback=None):
+    #     def decorator(func):
+    #         def wrapper(*args, **kwargs):
+    #             t =threading.Thread(target=func, args=args, kwargs=kwargs)
+    #             t.setDaemon(True)
+    #             t.start()
+    #             t.join(interval) # wait time
+    #             if t.is_alive() and callback:
+    #                 return threading.Timer(0, callback, args=[args[0], ]).start()
+    #             else:
+    #                 return
+    #         return wrapper
+    #     return decorator
+
+    # @time_out(3, callback_func)
     def send_flit_bin(self, flit_bin):
         '''                                                                
         发送flit                                                           
@@ -70,14 +89,16 @@ class DMA_Transmitter(object):
             mm[:length]=flit_bin                                                                           
             fcntl.ioctl(self.tx_dma_fd, XFER, DMA_BINDEX)                                                  
             tx_result = struct.unpack('I',mm[DMA_RES:DMA_RES+4])[0]
+            # print("tx_result: %s" % tx_result)
             if tx_result != 0:                                                                             
                 return 0
         return 1 
 
+    # @time_out(4, callback_func)
     def recv_flit_bin(self):
         '''                                                                                                
         接收flit                                                                                           
-        '''                                                                                                
+        '''                                                                                    
         recv = bytearray()                                                                                       
         with mmap.mmap(self.rx_dma_fd,DMA_MAP_SIZE,mmap.MAP_SHARED,mmap.PROT_WRITE | mmap.PROT_READ) as mm:
             
@@ -109,6 +130,9 @@ def recv(trans, client):
     #         f.write(flits)
 
     flits = trans.recv_flit_bin()
+    # if flits is None:
+    #     print("none")
+    #     flits = bytearray()
     client.sendall(flits)
     print("client send end")
 
@@ -163,6 +187,7 @@ def start_tcp_server(ip, port, id):
             #    break
             #    client.close()
 
+        left = bytearray()
         while True:
             try:
                 msg = client.recv(RECV_SIZE)
@@ -189,6 +214,8 @@ def start_tcp_server(ip, port, id):
 
             recv_len += len(msg)
             start = 0
+            stop = len(msg)
+            # print("msg len=%d" % stop)
             if length == 0:
                 #f = open("flitin.bin","wb")
                 if recv_len < 8:
@@ -207,7 +234,15 @@ def start_tcp_server(ip, port, id):
             #print("recv_len=%d" % recv_len)
             #begin_time = round(time.time() * 1000)
             if length > 0:
-                trans.send_flit_bin(msg[start:])
+                if (stop + len(left)) % 8 != 0:
+                    stop -= (stop + len(left)) % 8
+                    print("stop=%d" % stop)
+                    trans.send_flit_bin(left+msg[start:stop])
+                    left = msg[stop:]
+                else:
+                    trans.send_flit_bin(left+msg[start:])
+                    left = b''
+                # print("send msg done")
             #end_time = round(time.time() * 1000)
             #delta_time = end_time - begin_time
             #if delta_time > 5:
@@ -241,7 +276,7 @@ if __name__=='__main__':
         if len(sys.argv)>1:
             id = int(sys.argv[1])
         try:
-            start_tcp_server('0.0.0.0',1+id,id)
+            start_tcp_server('0.0.0.0',id,0)
         except socket.error:
             print("\nreconnect\n")
         time.sleep(1)
