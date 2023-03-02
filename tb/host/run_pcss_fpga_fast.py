@@ -154,9 +154,7 @@ class Configuration(object):
     def __init__(self, node_list=[]):
         self.node_list = node_list
 
-    def gen_conf(self,filename="config.txt"):
-        ## gen config file
-        f=open(filename,'w')
+    def gen_conf(self,config=[]):
         
         for node in self.node_list:
             flit_head = (node.connect << 59) + (node.pclass << 56) \
@@ -169,7 +167,7 @@ class Configuration(object):
             '''
             waddr = 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.neu_num)
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             nm_status:
                 [0] enable bit
@@ -184,18 +182,18 @@ class Configuration(object):
             waddr = 0
             tmp = (node.reset << 4) + (node.spike_code << 2) + (node.clear << 1) + node.enable
             ss = "%016x" % (flit_head + (waddr << 21) + tmp)
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             nm_vth: [19:0]
             nm_leak: [19:0]
             '''
             waddr = 2
             ss = "%016x" % (flit_head + (waddr << 21) + (int(node.vth) & 0xfffff))
-            f.write(ss+'\n')
+            config.append(ss)
 
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + (int(node.leak) & 0xfffff))
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             x_in : [7:0] 0x4
             y_in : [7:0] 0x5
@@ -207,73 +205,73 @@ class Configuration(object):
             '''
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.x_in)
-            f.write(ss+'\n')
+            config.append(ss)
 
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.y_in)
-            f.write(ss+'\n')
+            config.append(ss)
 
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.z_out)
-            f.write(ss+'\n')
+            config.append(ss)
 
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.x_k)
-            f.write(ss+'\n')
+            config.append(ss)
 
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.y_k)
-            f.write(ss+'\n')
+            config.append(ss)
 
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.x_out)
-            f.write(ss+'\n')
+            config.append(ss)
 
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.y_out)
-            f.write(ss+'\n')
+            config.append(ss)
 
             '''
             pad : valid
             '''
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.pad)
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             stride_log : 0,1,2,3,4
             stride : 1,2,4,8,16
             '''
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.stride_log)
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             xk_yk
             addr : 0xd
             '''
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.x_k*node.y_k)
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             rand_seed
             addr : 0xe
             '''
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.rand_seed)
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             x_start
             addr : 0xf
             '''
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.x_start)
-            f.write(ss+'\n')
+            config.append(ss)
             '''
             y_start
             addr : 0xf
             '''
             waddr += 1
             ss = "%016x" % (flit_head + (waddr << 21) + node.y_start)
-            f.write(ss+'\n')
+            config.append(ss)
 
             # write wgt mem
             '''
@@ -283,7 +281,7 @@ class Configuration(object):
             waddr = 0x1000
             for wgt in node.wgt_mem:
                 ss = "%016x" % (flit_head + (waddr << 21) + (int(wgt) & 0xffff))
-                f.write(ss+'\n')
+                config.append(ss)
                 waddr += 1
 
             # write dst mem
@@ -293,7 +291,7 @@ class Configuration(object):
             waddr = 0x2000
             for dst in node.dst_mem:
                 ss = "%016x" % (flit_head + (waddr << 21) + int(dst))
-                f.write(ss+'\n')
+                config.append(ss)
                 waddr += 1
 
             # enable
@@ -302,14 +300,13 @@ class Configuration(object):
             waddr = 0
             tmp = (node.reset << 4) + (node.spike_code << 2) + (node.clear << 1) + node.enable
             ss = "%016x" % (flit_head + (waddr << 21) + tmp)
-            f.write(ss+'\n')
+            config.append(ss)
 
-        f.close()
-        print('config done')
+        # print('config done')
+        return config   
 
-    def gen_clear(self,filename="spike.txt"):
-        ## gen clear file
-        f=open(filename,'w')
+    def gen_clear(self,spike=[]):
+
         for node in self.node_list:
             flit_head = (node.connect << 59) + (node.pclass << 56) \
                 + (node.dst_y << 52) + (node.dst_x << 48) + (node.dst_r2 << 42) + (node.dst_r1 << 36)
@@ -327,17 +324,18 @@ class Configuration(object):
             waddr = 0
             tmp = (node.reset << 4) + (node.spike_code << 2) + (node.clear << 1) + node.enable
             ss = "%016x" % (flit_head + (waddr << 21) + tmp)
-            f.write(ss+'\n')
+            spike.append(ss)
             # enable
             node.enable = 1
             node.clear = 0
             waddr = 0
             tmp = (node.reset << 4) + (node.spike_code << 2) + (node.clear << 1) + node.enable
             ss = "%016x" % (flit_head + (waddr << 21) + tmp)
-            f.write(ss+'\n')
+            spike.append(ss)
 
-        f.close()
-        print('clear done')
+        # print('clear done')
+        return spike
+
 
 class Input_Node():
     def __init__(self):
@@ -384,8 +382,7 @@ class Input_Node():
         self.reset = reset
 
 
-    def gen_input(self,filename="spike.txt",feature_map=[]):
-        f=open(filename,'a')
+    def gen_input(self, spike=[], feature_map=[]):
 
         # unenable
         self.pclass = 0b110 # write
@@ -396,7 +393,7 @@ class Input_Node():
         waddr = 0
         tmp = (self.reset << 4) + (self.spike_code << 2) + (clear << 1) + enable
         ss = "%016x" % (flit_head + (waddr << 21) + tmp)
-        f.write(ss+'\n')
+        spike.append(ss)
 
         # send data
         self.pclass = 0b001 # data
@@ -411,7 +408,7 @@ class Input_Node():
 
                 flit_data = (int(x) & 0xffff) # 16bit
                 ss = "%016x" % (flit_head + flit_data)
-                f.write(ss+'\n')
+                spike.append(ss)
     
         
         # enable
@@ -423,10 +420,10 @@ class Input_Node():
         waddr = 0
         tmp = (self.reset << 4) + (self.spike_code << 2) + (clear << 1) + enable
         ss = "%016x" % (flit_head + (waddr << 21) + tmp)
-        f.write(ss+'\n')
+        spike.append(ss)
 
-        f.close()
-        print('spike done')
+        # print('spike done')
+        return spike
 
 class Tik():
     def __init__(self, tik_num=0, tik_len=4096):
@@ -435,21 +432,20 @@ class Tik():
         self.tik_len = tik_len
         self.pclass = 0b011 # tik
 
-    def gen_input(self,filename="spike.txt"):
-        f=open(filename,'a')
+    def gen_input(self,spike=[]):
 
         # gen tik
         self.pclass = 0b011 # tik
         for i in range(self.tik_num):
             ss = "%016x" % ((self.pclass << 56) + self.tik_len)
-            f.write(ss+'\n')
+            spike.append(ss)
 
         # gen tik end
         ss = "%016x" % ((self.pclass << 56) + (1 << 32) + self.tik_len)
-        f.write(ss+'\n')
+        spike.append(ss)
 
-        f.close()
-        print('tik done')
+        # print('tik done')
+        return spike
 
 class PCSS():
     def __init__(self):
@@ -465,6 +461,9 @@ class PCSS():
         self.conf = None
         self.tik_init = Tik(tik_num=0,tik_len=self.tik_len)
         self.tik_send = Tik(tik_num=self.tik_num,tik_len=self.tik_len)
+        # config & spike file
+        self.config = []
+        self.spike = []
 
     def init_pcss(self):
 
@@ -564,8 +563,8 @@ class PCSS():
 
         # gen config
         self.conf = Configuration(node_list=self.node_list)
-        self.conf.gen_conf()
-        self.tik_init.gen_input(filename="config.txt")
+        self.config = self.conf.gen_conf(config=[])
+        self.config = self.tik_init.gen_input(spike=self.config)
 
     #---------------------
     #       gen spk
@@ -573,7 +572,7 @@ class PCSS():
     def gen_spk(self,track_fm=[]):
 
         # clear
-        self.conf.gen_clear(filename="spike.txt")
+        self.spike = self.conf.gen_clear(spike=[]) # fm init
 
         # load fm
         if track_fm is not None:
@@ -595,9 +594,9 @@ class PCSS():
                 node_tmp.set_node_loc(node_x=1,node_y=0,node_number=node_number)
                 node_tmp.set_neu_par(spike_code='Count',reset=self.reset)
                 fm = [track_fm[i][64*x : 64*x+dx] for i in range(64*y, 64*y+dy)]
-                node_tmp.gen_input(filename="spike.txt",feature_map=fm)
-                
-        self.tik_send.gen_input(filename="spike.txt")
+                self.spike = node_tmp.gen_input(spike=self.spike,feature_map=fm)
+
+        self.spike = self.tik_send.gen_input(spike=self.spike)
 
 class Transmitter(object):
     def __init__(self):
@@ -633,15 +632,15 @@ class Transmitter(object):
         self.socket_inst.sendall(send_bytes)
         return 1
 
-    def send_flit(self, flit_file, directions=0):
+    def send_flit(self, flit_list=[], directions=0):
         '''
         发送flit
         '''
-        with open(flit_file, 'r') as file:
-                flit_list = file.readlines()
+        # with open(flit_file, 'r') as file:
+        #         flit_list = file.readlines()
         length = len(flit_list)
         if length > 2**26:
-            print("===<2>=== %s is larger than 0.25GB" % flit_file)
+            print("===<2>=== flit_file is larger than 0.25GB")
             print("===<2>=== send flit length failed")
             return 0
         print("===<2>=== send flit length succeed")
@@ -663,7 +662,7 @@ class Transmitter(object):
                 print("%s" % reply)
         return 1    
 
-def run_pcss(tc="", filename="", recv = True, ip = "10.11.8.238", port=1): # 10.11.8.238
+def run_pcss(tc="", flit_file=[], recv = True, ip = "10.11.8.238", port=1): # 10.11.8.238
     if tc != "" :
         if os.path.exists(tc):
             tc  = tc+"\\"
@@ -674,14 +673,15 @@ def run_pcss(tc="", filename="", recv = True, ip = "10.11.8.238", port=1): # 10.
     trans.connect_lwip(ip_address)
     print("===<2>=== tcp connect succeed")
     start_time = time.time_ns()
-    res=trans.send_flit(filename) # send
+    res=trans.send_flit(flit_list=flit_file) # send
     if res == 0:
         return
     end_time = time.time_ns()
     print("===<2>=== send flit data   succeed")
     print('===<2>=== tcp sent elapsed : %.3f ms' % ((end_time - start_time)/1000000))
 
-    f = open("flitout.txt", "wb") 
+    # f = open("flitout.txt", "wb") 
+    flitout = []
     # fbin = open(tc+"recv_"+pre+"flitout.bin", "wb")
     start_time = time.time_ns()
     hl = b""
@@ -697,16 +697,19 @@ def run_pcss(tc="", filename="", recv = True, ip = "10.11.8.238", port=1): # 10.
             hl = b + hl
             index = index + 1
             if (index == 8):
-                f.write (hl + b"\n")
+                flitout.append(hl)
+                # f.write (hl + b"\n")
                 # print(hl)
                 hl = b""
                 index = 0
                 tot = tot + 1
     end_time = time.time_ns()
-    f.close()
+    # f.close()
     # fbin.close()
     trans.socket_inst.close()
     print('===<2>=== tcp recv elapsed : %.3f ms with %d flits' % ((end_time - start_time)/1000000,tot))
+
+    return flitout
 
 if __name__ == "__main__":
     # socket
@@ -716,11 +719,18 @@ if __name__ == "__main__":
     # init
     net = PCSS()
     net.init_pcss()
-    run_pcss(filename='config.txt', port=id)
+    run_pcss(flit_file=net.config, port=id)
     # send fm
-    for loop in range(10):
-        stime = time.time_ns()
-        net.gen_spk(track_fm=[])
-        run_pcss(filename='spike.txt', port=id)
-        etime = time.time_ns()
-        print("\n<--total time elapsed : %.3f ms-->\n" % ((etime - stime)/1000000.0))
+    # for loop in range(10):
+    stime = time.time_ns()
+    net.gen_spk(track_fm=[])
+    spk_recv = run_pcss(flit_file=net.spike, port=id)
+    etime = time.time_ns()
+    print("\n<--total time elapsed : %.3f ms-->\n" % ((etime - stime)/1000000.0))
+
+    f = open("flitout.txt", "wb")
+    for line in spk_recv:
+        f.write(line+b'\n')
+    f.close()
+    print('write done')
+
