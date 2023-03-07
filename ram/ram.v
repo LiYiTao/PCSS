@@ -112,18 +112,18 @@ reg  [ADDR_WIDTH-1:0] wr_ptr;
 
 `ifdef ASIC
     S55DRAM_W64D1042 the_queue(
-        QA    (  ),
-        QB    (dout),
-        CLKA  (clk ),
-        CLKB  (clk ),
-        CENA  (1'b0),
-        CENB  (1'b0),
-        WENA  (~wr_en),
-        WENB  (rd_en),
-        AA    (wr_ptr),
-        AB    (rd_ptr),
-        DA    (din  ),
-        DB    (  )
+        .QA    (  ),
+        .QB    (dout),
+        .CLKA  (clk ),
+        .CLKB  (clk ),
+        .CENA  (1'b0),
+        .CENB  (1'b0),
+        .WENA  (~wr_en),
+        .WENB  (rd_en),
+        .AA    (wr_ptr),
+        .AB    (rd_ptr),
+        .DA    (din  ),
+        .DB    (  )
     );
 `else
     fifo_ram #(

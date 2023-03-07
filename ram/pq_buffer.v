@@ -91,18 +91,18 @@ assign din_b2 = (clear | !bunit_sl) ? din1 : din2;
 
 `ifdef ASIC
     S55DRAM_W32D4096 bunit1(
-        QA    (  ),
-        QB    (dout_b1  ),
-        CLKA  (clk ),
-        CLKB  (clk ),
-        CENA  (1'b0),
-        CENB  (1'b0),
-        WENA  (~bunit1_we),
-        WENB  (bunit1_re),
-        AA    (waddr_b1),
-        AB    (raddr_b1),
-        DA    (din_b1  ),
-        DB    (  )
+        .QA    (  ),
+        .QB    (dout_b1  ),
+        .CLKA  (clk ),
+        .CLKB  (clk ),
+        .CENA  (1'b0),
+        .CENB  (1'b0),
+        .WENA  (~bunit1_we),
+        .WENB  (bunit1_re),
+        .AA    (waddr_b1),
+        .AB    (raddr_b1),
+        .DA    (din_b1  ),
+        .DB    (  )
     );
 
     S55DRAM_W32D4096 bunit2(

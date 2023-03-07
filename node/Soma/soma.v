@@ -96,18 +96,18 @@ reg [NNW-1:0] config_soma_vm_addr_dly;
 
 `ifdef ASIC
     S55DRAM_W32D4096 vm_mem(
-        QA    (  ),
-        QB    (config_soma_vm_rdata  ),
-        CLKA  (clk_soma ),
-        CLKB  (clk_soma ),
-        CENA  (1'b0),
-        CENB  (1'b0),
-        WENA  (~vm_we),
-        WENB  (vm_re),
-        AA    (vm_waddr),
-        AB    (vm_raddr),
-        DA    (vm_wdata  ),
-        DB    (  )
+        .QA    (  ),
+        .QB    (config_soma_vm_rdata  ),
+        .CLKA  (clk_soma ),
+        .CLKB  (clk_soma ),
+        .CENA  (1'b0),
+        .CENB  (1'b0),
+        .WENA  (~vm_we),
+        .WENB  (vm_re),
+        .AA    (vm_waddr),
+        .AB    (vm_raddr),
+        .DA    (vm_wdata  ),
+        .DB    (  )
     );
 `else
     dp_ram #(
