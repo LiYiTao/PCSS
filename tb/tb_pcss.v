@@ -117,7 +117,7 @@ end
 
 // open file
 initial begin
-    $readmemh("D:/read.txt",cfg_data);
+    $readmemh("../pcss/read.txt",cfg_data);
     // $readmemh("D:/spike.txt",spk_data);
 end
 
