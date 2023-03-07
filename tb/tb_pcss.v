@@ -2,7 +2,7 @@
 `define debug
 `define ASIC
 //`define FPGA
-//`define SAIF
+`define SAIF
 //`define VCD_DUMP
 
 module tb_pcss_top;
@@ -19,7 +19,7 @@ parameter CHIPDATA_WIDTH  = 16;
 parameter NNW             = 12; // TODO neural number width
 
 // localparam
-localparam CFG_LEN = 45;
+localparam CFG_LEN = 2;
 localparam SPK_LEN = 8;
 localparam TIK_LEN = 7;
 localparam TIK_CNT = 8; // tik count
@@ -117,8 +117,8 @@ end
 
 // open file
 initial begin
-    $readmemh("D:/config.txt",cfg_data);
-    $readmemh("D:/spike.txt",spk_data);
+    $readmemh("D:/read.txt",cfg_data);
+    // $readmemh("D:/spike.txt",spk_data);
 end
 
 // send data
@@ -142,15 +142,15 @@ initial begin
     // work mode
     enable = 1;
     $display("Work mode");
-    for (j=0; j<SPK_LEN; j=j+1) begin
-        time_step = spk_data[j][FW+CONNECT_WIDTH+TIK_CNT-1 : FW+CONNECT_WIDTH];
-        wait (tik_cnt == time_step);
-        pcss_send(spk_data[j]);
-    end
+    // for (j=0; j<SPK_LEN; j=j+1) begin
+    //     time_step = spk_data[j][FW+CONNECT_WIDTH+TIK_CNT-1 : FW+CONNECT_WIDTH];
+    //     wait (tik_cnt == time_step);
+    //     pcss_send(spk_data[j]);
+    // end
 
-    for (i=0; i<100; i=i+1) begin //wait spk out
-        @(posedge clk);
-    end
+    // for (i=0; i<100; i=i+1) begin //wait spk out
+    //     @(posedge clk);
+    // end
 
     `ifdef SAIF
         $toggle_stop;

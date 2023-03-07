@@ -426,7 +426,7 @@ class Input_Node():
         return spike
 
 class Tik():
-    def __init__(self, tik_num=0, tik_len=4096):
+    def __init__(self, tik_num=0, tik_len=[]):
         # tik par
         self.tik_num = tik_num
         self.tik_len = tik_len
@@ -437,11 +437,11 @@ class Tik():
         # gen tik
         self.pclass = 0b011 # tik
         for i in range(self.tik_num):
-            ss = "%016x" % ((self.pclass << 56) + self.tik_len)
+            ss = "%016x" % ((self.pclass << 56) + self.tik_len[i])
             spike.append(ss)
 
         # gen tik end
-        ss = "%016x" % ((self.pclass << 56) + (1 << 32) + self.tik_len)
+        ss = "%016x" % ((self.pclass << 56) + (1 << 32) + self.tik_len[-1])
         spike.append(ss)
 
         # print('tik done')
@@ -454,8 +454,9 @@ class PCSS():
         self.vth = 0 # TODO
         self.leak = 255 # TODO
         # tik par
-        self.tik_num = 8
-        self.tik_len = 1048576 # 32 bit
+        self.tik_num = 13
+        # self.tik_len = [524288, 524288, 524288, 524288, 524288, 524288, 524288, 524288, 524288, 524288, 524288, 524288, 524288] # 32 bit
+        self.tik_len = [393216, 393216, 393216, 393216, 393216, 262144, 131072, 131072, 131072, 131072, 65536, 65536, 65536] # 32 bit
         # node
         self.node_list = []
         self.conf = None
@@ -721,16 +722,16 @@ if __name__ == "__main__":
     net.init_pcss()
     run_pcss(flit_file=net.config, port=id)
     # send fm
-    # for loop in range(10):
-    stime = time.time_ns()
-    net.gen_spk(track_fm=[])
-    spk_recv = run_pcss(flit_file=net.spike, port=id)
-    etime = time.time_ns()
-    print("\n<--total time elapsed : %.3f ms-->\n" % ((etime - stime)/1000000.0))
+    for loop in range(10):
+        stime = time.time_ns()
+        net.gen_spk(track_fm=[])
+        spk_recv = run_pcss(flit_file=net.spike, port=id)
+        etime = time.time_ns()
+        print("\n<--total time elapsed : %.3f ms-->\n" % ((etime - stime)/1000000.0))
 
-    f = open("flitout.txt", "wb")
-    for line in spk_recv:
-        f.write(line+b'\n')
-    f.close()
-    print('write done')
+    # f = open("flitout.txt", "wb")
+    # for line in spk_recv:
+    #     f.write(line+b'\n')
+    # f.close()
+    # print('write done')
 
